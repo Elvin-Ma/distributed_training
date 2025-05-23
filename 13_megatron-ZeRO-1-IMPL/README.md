@@ -298,7 +298,7 @@ pretrain                      training.py:289
 
 # 4 DistributedOptimizer
 
-一个buffer会却分成多个bucket, Zero 是在Bucket上进行切分的。`buffer里的每个bucket都要切成data_parallel_world_size份。` <br>
+**一个buffer会却分成多个bucket, Zero 是在Bucket上进行切分的。`buffer里的每个bucket都要切成data_parallel_world_size份。`** <br>
 
 几个关键函数：<br>
 
@@ -382,8 +382,13 @@ for (param_dtype, grad_dtype), params in param_and_grad_dtype_to_params.items():
 
 - [distributed_data_parallel](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/distributed/param_and_grad_buffer.py#L541-L559)
 
+- **根据设定的bucket_size 来获取分桶的大小**;
+
 ## 6.5 总buffer的初始化 : self.param_data and self.grad_data
 - [distributed_data_parallel](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/distributed/param_and_grad_buffer.py#L620-L633)
+
+- self.param_data : 原模型参数整合到 buffer中，并分桶进行allreduce;
+- self.grad_data : 直接将grad 设置为一整块buffer.
 
 ```python
     # Only re-map param tensors if using distributed optimizer.
@@ -457,12 +462,50 @@ param.main_grad = self._get( # Gradient buffer.
 )
 ```
 
+## 6.7 param.grad copy 到 param.main_grad
+
+- 通过钩子函数实现
+- **param.grad 会被删除**
+- 先类型转换后再进行通信操作;
+
+```python
+    def _make_backward_post_hook(self, param: torch.nn.Parameter):
+        """
+        Creates a backward post-hook to dispatch an all-reduce / reduce-scatter when
+        ready (i.e., when all grads in a bucket have been computed in all microbatches
+        in a batch).
+        """
+
+        def hook(*unused):
+            if is_graph_capturing():
+                return
+
+            if param in self.param_to_bucket_group:
+                assert param.requires_grad
+                if self.ddp_config.overlap_grad_reduce:
+                    assert (
+                        param.grad is not None
+                    ), 'param.grad being None is not safe when overlap_grad_reduce is True'
+                if param.grad is not None and (
+                    not param.grad_added_to_main_grad or getattr(param, 'zero_out_wgrad', False)
+                ):
+                    param.main_grad.add_(param.grad.data)
+                param.grad = None
+
+                if self.ddp_config.overlap_grad_reduce:
+                    self.param_to_bucket_group[param].register_grad_ready(param)
+
+        return hook
+```
+
 ## 6.7 _ParamAndGradBucket 里初始化
+- [distributed_data_parallel](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/distributed/param_and_grad_buffer.py#L749-L770)
+
 - 零散的params
 - 合并的param_data
 - 合并的grad_data
+- 通信是针对每个bucket进行通信
 
-- [distributed_data_parallel](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/distributed/param_and_grad_buffer.py#L749-L770)
 
 ```python
     bucketed_param_data = None
@@ -658,7 +701,7 @@ def partition_buckets(
                 )
 ```
 
-## 6.16 forward 时必须等带 weight的all_gather 结束
+## 6.16 forward 时必须等待 weight的all_gather 结束
 
 ```python
     def _make_forward_pre_hook(self):
@@ -773,11 +816,29 @@ def start_param_sync(self, force_sync: bool = False):
 
 - [shard_main_param](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/distrib_optimizer.py#L379-L380)
 
+- 得到shard 的 main_param 副本
 ```python
   shard_main_param = shard_model_param.clone().float() # fp32的副本
 ```
 
-## 7.3 DistributedOptimzier 中 params 的更新
+- bind 到 model_param 的 **main_param** 属性中
+
+```python
+    # Store handle to main_param.
+    model_param.main_param = shard_main_param
+    model_param.main_param_sharded = True
+```
+
+## 7.3 得到几个重要group
+> **Parameter groups:**
+>   model_float16_groups: original float16 parameters
+>   model_fp32_groups: original fp32 parameters
+>   shard_float16_groups: shards of original float16 parameters
+>   shard_fp32_groups: shards of original fp32 parameters
+>   shard_fp32_from_float16_groups: fp32 copy of float16 parameters
+
+
+## 7.4 DistributedOptimzier 中 params 的更新
 
 - [_build_model_and_main_param_groups](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/distrib_optimizer.py#L419-L430)
 
@@ -795,7 +856,7 @@ def start_param_sync(self, force_sync: bool = False):
         ]
 ```
 
-## 7.4 MixedPrecisionOptimizer step 中完成参数转化和更新
+## 7.5 MixedPrecisionOptimizer step 中完成参数转化和更新
 
 - [DistributedOptimizer](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/optimizer.py#L469-L500)
 
@@ -838,7 +899,7 @@ def start_param_sync(self, force_sync: bool = False):
         return success, grad_norm, num_zeros_in_grad
 ```
 
-# 7.5 梯度抽取到切片:
+# 7.6 梯度抽取到切片:
 
 - [copy_group_grads](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/distrib_optimizer.py#L1931-L1950)
 
@@ -869,7 +930,7 @@ def start_param_sync(self, force_sync: bool = False):
                     shard_main_param.grad = shard_model_grad.float()
 ```
 
-## 7.6 更新后的 param 再 copy 到 weight
+## 7.7 更新后的 param 再 copy 到 weight
 
 - [DistributedOptimizer](https://github1s.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/optimizer.py#L443-L467)
 
