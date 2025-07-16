@@ -1,4 +1,4 @@
-# 1 pytorch fsdp2 新特性
+# 0 pytorch fsdp2 新特性
 | 名称                              | 描述                                                                                                                                                                                                 |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Shard Per-Param                   | 对维度0上的每个参数进行分片，来解决`FlatParameter`的局限性。                                                                                                                                         |
@@ -9,25 +9,42 @@
 | Avoiding RecordStream             | 通过避免使用`recordStream`使得内存释放更加确定，相比于FSDP1，FSDP2的GPU内存平均降低7%。                                                                                                             |
 | Efficient Collective Kernels      | 编写了高效的kernels来实现multi-tensor的`allgather`和`reduce scatter`操作，使得通信效率相对于FSDP1没有下降。                                                                                          |
 
-# 2 DeviceMesh and DTensor
+**FSDP2 相关源代码**
 
-![DeviceMesh](./images/DeviceMesh-DTensor.png)
+![alt text](images/image.png)
 
+# 1 FSDPModule data structure
 
-# 3 FSDP IMPL relative class
+- **FSDPState + FSDPParamGroup + FSDPParam**
+- **FSDPParamGroup 处理一个module 里的参数;**
+- **FSDPParam 对每个Param参数进行wrap，并提供访问DTensor 和 Tensor 相互转化的API;**
+- **FSDPState 和 module 一一对应的绑定起来，提供多个钩子函数的注册**
+- **绑定了FSDPState的module 重新后继承FSDPModule, 得到最终的FSDP???Wrapper的module类;**
+- `_pre_forward, _post_forward,`
+- `_pre_backward 在FSDPState 的 _post_forward 里完成注册；`
+- `post_backward 在 FSDPParamGroup 的pre_forward 里完成注册；`
+- `FSDPParam 的 _setattr_on_modules 里更新module 的param;`
+- `初始化过程Param 都是meta type 的，真正允许时会 _lazy_init;`
 
-![FSDP-Relative class](./images/FSDP-Class.png)
+![FSDP-Relative class](./images/FSDP-Class.jpg)
 
-# 4 FSDP + Transformer 双 nn.module
+# 2 FSDPModule + nn.Module 多继承得到最终class
 
 ![FSDP+Transformer](./images/FSDP-Transformer.png)
 
-# 5 FSDP Comm
+# 3 FSDP 的通信
+
+- _fsdp_distributed.py 里对comm 进行了wraper
+- 有时直接对FSDPParamGroup 里tensor 直接进行通信；
+- 有时需要对FSDPParam 细粒度进行通信；
+
+> unshard : all_gather 一般对FSDPParamGroup 里统一进行；
+> shard:  一般对FSDPParam 细粒度进行(自动触发)；
 
 ![FSDP Comm](./images/FSDP-Comm.png)
 
 
-# 6 FSDP2 代码实现
+# 4 FSDP2 example code
 
 ```python
 import torch
@@ -111,21 +128,7 @@ torchrun \
     fsdp_random.py
 ```
 
-# 7 进程组初始化
-
-| 连接方式 | 风险等级 | 适用环境 | 备注 |
-| --- | --- | --- | --- |
-| `env://` | 低 | 单机/动态环境 | 环境变量需统一 |
-| `tcp://` | 中 | 多机固定IP环境 | 网络互通、端口开放 |
-| `file://` | 高 | 有共享存储的多机环境 | 共享文件系统权限 |
-
-
-推荐选择：
-
-- 单机训练优先用env://（由torchrun自动管理环境变量）。<br>
-- 多机训练推荐tcp://，需手动指定主节点IP和端口2。<br>
-
 # 参考资料
 [why FSDP2](https://github.com/pytorch/torchtitan/blob/main/docs/fsdp.md)
-[pytorch DTensor](https://github.com/pytorch/pytorch/blob/main/torch/distributed/tensor/README.md)
+
 
