@@ -32,7 +32,7 @@
 
 ![FSDP+Transformer](./images/FSDP-Transformer.png)
 
-# 3 FSDP 的通信
+# 3 FSDP2 的通信
 
 - _fsdp_distributed.py 里对comm 进行了wraper
 - 有时直接对FSDPParamGroup 里tensor 直接进行通信；
@@ -42,6 +42,50 @@
 > shard:  一般对FSDPParam 细粒度进行(自动触发)；
 
 ![FSDP Comm](./images/FSDP-Comm.png)
+
+# FSDP2 几个点
+- **module param 的替换发生在 FSDPParam init 里**
+
+```python
+class FSDPParam:
+    def _setattr_on_modules(self, param: nn.Parameter) -> None:
+        unsafe_setattr_param(
+            self._module_info.module, self._module_info.param_name, param
+        )
+        for shared_module, shared_param_name in zip(
+            self._module_info.shared_modules, self._module_info.shared_param_names
+        ):
+            unsafe_setattr_param(shared_module, shared_param_name, param)
+
+def unsafe_setattr_param(
+    module: nn.Module, param_name: str, param: nn.Parameter
+) -> None:
+    if getattr(module.__setattr__, "__func__", None) is nn.Module.__setattr__:
+        module._parameters[param_name] = param
+    else:  # slow path
+        setattr(module, param_name, param)
+```
+
+- **哪里进行输出化呢???**
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 用户显示调用FSDPTransformer 模型的init_weights 方法进行初始化.
+
+```python
+with torch.no_grad():
+    model.init_weights(buffer_device=buffer_device)
+```
+
+FSDPState _lazy_init 完成哪些初始化呢?
+
+
+|初始化内容|	作用|
+|:----|:----|
+|根状态确定|协调分布式训练的核心角色|
+|设备与通信组初始化|支持跨设备通信|
+|参数分片|实现内存优化|
+|优化器状态分片|降低每个设备的内存压力|
+|梯度归约策略|控制通信行为|
+|元数据与上下文管理|支持模块状态跟踪与恢复|
 
 
 # 4 FSDP2 example code
