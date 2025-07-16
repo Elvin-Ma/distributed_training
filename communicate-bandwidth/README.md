@@ -56,11 +56,21 @@
 - 单一任务的传输速率仍受限于单条物理链路的带宽（如12.5GB/s），但多任务可叠加总吞吐量. <br>
 
 # 3 NVLink and NVSwitch
+
+## 3.1 NVLink
+NVLink 的双向特性: <br>
+
+每条 NVLink 是 全双工通道（类似双向高速公路）: <br>
+- 可同时 发送 + 接收数据（各 25 GB/s）;
+- **实际有效带宽 = 50 GB/s（双向）**
+- v100 每个GPU 6条NVlink, 总带宽 300 GB/s（双向）;
+
 2014 年，NVIDIA 推出 NVLink 技术来代替 PCIe，旨在突破 PCIe 互联的带宽性能瓶颈，实现 GPU 芯片之间的高带宽、低延迟数据传输。NVLink 互联，即：GPU 通过 NVLink 两两直连，而不再需要通过 PCIe Switch.
 
 ![nvlink bandwidth](images/image-1.png)
 
 
+## 3.2 NVSwitch
 NVSwitch 是 NVIDIA 于 2018 年在 DGX-2 中首次推出，它是为了解决多 GPU 通信瓶颈而设计的全互连交换架构，它标志着从 PCIe 和点对点 NVLink 向真正“巨型 GPU”模型的演进，如今已发展到第三代，广泛应用于 DGX A100/H100、Hopper 架构等新一代 AI 超算平台中。
 
 ![nvswitch bandwidth](images/image-2.png)
