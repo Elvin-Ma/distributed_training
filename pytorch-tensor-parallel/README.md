@@ -274,7 +274,7 @@ class RowwiseParallel(ParallelStyle):
 
 - **dist_param.shape 显示的是完整的shape, 但dist_param._local_tensor 是已经被shard 的tensor** <br>
 
-![alt text](image.png)
+![alt text](./images/image.png)
 
 ## 2.3 TP 情况下Attention 里head 自动推导
 
@@ -780,7 +780,7 @@ def distribute_module(
 
 # 5 TP With Sequence Parallel
 
-![alt text](image-1.png)
+![alt text](./images/image-1.png)
 
 # 5 Torchtitan 中 TP 的apply
 - [parallelism_llama.py](https://github1s.com/pytorch/torchtitan/blob/main/torchtitan/parallelisms/parallelize_llama.py#L129)
