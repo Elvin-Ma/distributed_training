@@ -66,7 +66,7 @@ def unsafe_setattr_param(
         setattr(module, param_name, param)
 ```
 
-- **哪里进行输出化呢???**
+- **哪里进行初始化呢???**
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 用户显示调用FSDPTransformer 模型的init_weights 方法进行初始化.
 
@@ -78,7 +78,7 @@ with torch.no_grad():
 FSDPState _lazy_init 完成哪些初始化呢?
 
 
-|初始化内容|	作用|
+|初始化内容|作用|
 |:----|:----|
 |根状态确定|协调分布式训练的核心角色|
 |设备与通信组初始化|支持跨设备通信|
@@ -87,6 +87,9 @@ FSDPState _lazy_init 完成哪些初始化呢?
 |梯度归约策略|控制通信行为|
 |元数据与上下文管理|支持模块状态跟踪与恢复|
 
+- **unshard 原理**
+
+![fsdp-unshard](./images/fsdp-unshard.jpg)
 
 # 4 FSDP2 example code
 
