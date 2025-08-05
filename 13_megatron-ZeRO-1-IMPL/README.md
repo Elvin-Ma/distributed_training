@@ -674,6 +674,32 @@ def partition_buckets(
         return hook
 ```
 
+> 只有在overlap_grad_reduce 时. register_grad_ready 里会调用 start_grad_sync 进行梯度同步.
+
+```python
+class ParamAndGradBucketGroup:
+    ...
+
+    def register_grad_ready(self, param: torch.nn.Parameter):
+        """
+        Registers grads for the passed-in param to be "ready" for grad sync.
+
+        When the number of microbatches is greater than 1, we only want to register
+        grads as ready when processing the last microbatch and ddp_config.overlap_grad_reduce
+        is True.
+        """
+        assert (
+            self.ddp_config.overlap_grad_reduce
+        ), 'register_grad_ready() should only be called when overlap_grad_reduce is True'
+        if self.is_last_microbatch:
+            assert param in self.param_to_bucket, 'Param is not in the bucket group'
+            assert param not in self.params_with_grad, 'Cannot set grad twice'
+            self.params_with_grad.add(param)
+            # If all params in bucket group have grads available, issue communication call.
+            if len(self.params_with_grad) == len(self.params):
+                self.start_grad_sync()
+```
+
 ## 6.15 在 register_grad_ready 里进行 start_grad_sync
 
 - **注意: DistributedOptimizer 对应这里的 reduce_scatter, 其实是`Zero1`, 只是更新了一个bucket里自己对应的那部分的grad, 但总的 grad 还是那么大。** <br>
