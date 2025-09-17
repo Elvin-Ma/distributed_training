@@ -16,7 +16,7 @@ NCCL 充当“劳动者”：一旦进程知道了彼此的存在并且拿到了
 - TCP：自己写一个简单的 TCP 服务器来分发 ncclUniqueId。
 - 环境变量：在启动所有进程前，预先设置好环境变量（但这通常不实用）。
 
-# 1 pytorch 中是如何传播ncclUniqueId的呢？
+# 1. pytorch 中是如何传播ncclUniqueId的呢？
 
 PyTorch 需要一个中央协调点来让所有进程交换信息（最重要的就是 ncclUniqueId）。这个协调点被称为 **Store**，它通常是一个`简单的键值存储系统`。
 
@@ -85,16 +85,45 @@ ProcessGroup 最终执行collective 的算子或 P2P 算子 是在collective 和
 
 先在rank 0 生成uniqueID --> broadcast other rank --> initNCCLComm
 
+**broadcastUniqueNCCLID 是通过store_.get 拿到的** <br>
+
 **UniqueId: C10D_NCCL_CHECK(ncclGetUniqueId(&ncclID), std::nullopt);**
 
 ```cpp
+void ProcessGroupNCCL::broadcastUniqueNCCLID(
+    ncclUniqueId* ncclID,
+    bool isSingleP2POp,
+    const std::string& p2pKey,
+    int p2pRank) {
+  std::string storeKey;
+  if (!isSingleP2POp) {
+    storeKey = std::to_string(ncclCommCounter_++);
+  } else {
+    storeKey = p2pKey;
+  }
+  if (rank_ == 0 || (isSingleP2POp && p2pRank == 0)) {
+    auto vec = std::vector<uint8_t>(
+        reinterpret_cast<uint8_t*>(ncclID),
+        reinterpret_cast<uint8_t*>(ncclID) + NCCL_UNIQUE_ID_BYTES);
+    store_->set(storeKey, vec);
+  } else {
+    try {
+      auto vec = store_->get(storeKey);
+      TORCH_CHECK_WITH(
+          DistBackendError,
+          vec.size() == NCCL_UNIQUE_ID_BYTES,
+          "Invalid size for ncclUniqueId");
+      std::memcpy(ncclID, vec.data(), vec.size());
+    }
+  }
+}
+
 std::shared_ptr<NCCLComm> ProcessGroupNCCL::initNCCLComm(
     const std::string& deviceKey,
     at::Device& device,
     OpType opType,
     int p2pRank,
     bool isSendRecvSelf) {
-
   usedDeviceIdxs_.insert(device.index());
 
   // NCCL communicator not cached, create a new entry
@@ -125,14 +154,6 @@ std::shared_ptr<NCCLComm> ProcessGroupNCCL::initNCCLComm(
       // Broadcast so that each process can have a unique NCCL ID
       auto timeStarted = std::chrono::steady_clock::now();
       broadcastUniqueNCCLID(&ncclID, singleP2POp, deviceKey, p2pRank);
-      auto timerDeltaMs =
-          std::chrono::duration_cast<std::chrono::duration<double>>(
-              std::chrono::steady_clock::now() - timeStarted)
-              .count() *
-          1000;
-      LOG(INFO) << logPrefix()
-                << "ProcessGroupNCCL broadcast unique ID through store took "
-                << timerDeltaMs << " ms";
     }
 
 #ifdef NCCL_HAS_COMM_NONBLOCKING
