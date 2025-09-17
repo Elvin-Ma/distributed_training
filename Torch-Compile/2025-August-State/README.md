@@ -1,6 +1,7 @@
 # State of torch.compile for training (August 2025)
 
 - [link](https://blog.ezyang.com/2025/08/state-of-torch-compile-august-2025/)
+- [知乎翻译](https://zhuanlan.zhihu.com/p/1945653415607776563?share_code=1bUfdb56tD8CG&utm_psn=1945829432687329523)
 
 本文的目的是集中梳理截至 2025 年 8 月，torch.compile 在训练领域的应用现状。文中内容都是其他渠道提及的信息，只是我们很少将所有相关内容整合在同一篇文档中。本文档的目标读者是正在评估将 torch.compile 用于**大规模训练任务的团队**。
 
