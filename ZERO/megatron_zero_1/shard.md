@@ -155,6 +155,10 @@ per_bucket_numel_unpadded: 每个bucket的未padding的元素个数
 self.param_index_map = {param: (param_start_index, param_end_index, bucket_id)}
 self.bucket_indices = [(bucket_start_index, bucket_end_index)]
 
+- PP stage 0 : 按照 bucket_size 来分配bucket
+- shared embedding weight: 需要单独分配bucket
+- PP stage > 0: 把整个stage 里所有params 放到同一个bucket
+
 
 ```python
     # Param -> location in buffer mapping (used in dist. optimizer).
@@ -262,7 +266,7 @@ for param in params[::-1]:
 
     param.main_grad = self._get(
         param.data.shape, param_start_index, buffer_type=BufferType.GRAD
-    )
+    ) # param.grad vs param.main_grad
 
     # bucket_id 更新时会到这里
     if bucket_id != cur_bucket_id:
