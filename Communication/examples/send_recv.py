@@ -33,9 +33,66 @@ def run(rank, world_size):
     # 清理进程组
     dist.destroy_process_group()
 
+def run_send_recv(rank, world_size):
+    # 设置设备（重要：NCCL需要GPU）
+    torch.cuda.set_device(rank)
+    device = torch.device(f"cuda:{rank}")
+
+    # 初始化进程组
+    dist.init_process_group(
+        backend="nccl",
+        world_size=world_size,
+        rank=rank
+    )
+
+    send_tensor = torch.arange(2, dtype=torch.float32, device=device) + 2 * rank
+    recv_tensor = torch.zeros(2, dtype=torch.float32, device=device)
+
+    dst_rank = (rank + 1) % world_size
+    src_rank = (rank - 1) % world_size
+
+    print(f"===========rank: {rank} dst_rank: {dst_rank} src_rank: {src_rank}")
+
+    # if rank == 0:
+    #     work1 = dist.isend(send_tensor, dst=dst_rank)
+    #     work2 = dist.irecv(recv_tensor, src=src_rank)
+    # else:
+    #     work2 = dist.irecv(recv_tensor, src=src_rank)
+    #     work1 = dist.isend(send_tensor, dst=dst_rank)
+    # work1.wait()
+    # work2.wait()
+
+    send_op = dist.P2POp(dist.isend, send_tensor, dst_rank)
+    recv_op = dist.P2POp(dist.irecv, recv_tensor, src_rank)
+    reqs = dist.batch_isend_irecv([send_op, recv_op])
+    for req in reqs:
+        req.wait()
+
+    # works = []
+    # works.append(dist.isend(send_tensor, dst=dst_rank))
+    # works.append(dist.irecv(recv_tensor, src=src_rank))
+
+    # for work in works:
+    #     work.wait()
+
+    print(f"============rank: {rank} send_tensor: {send_tensor} recv_tensor: {recv_tensor}")
+
+
+
 if __name__ == "__main__":
     # 获取环境变量
     world_size = int(os.environ["WORLD_SIZE"])
     rank = int(os.environ["RANK"])
 
-    run(rank, world_size)
+    if True:
+        import os, debugpy
+        base_port=5001
+        rank=int(os.getenv("LOCAL_RANK"))
+        debugpy.listen(("0.0.0.0", base_port + rank))
+        print("Waiting for debugger to attach...", os.getpid())
+        debugpy.wait_for_client()
+
+
+    # run(rank, world_size)
+    run_send_recv(rank, world_size)
+    print(f"run send_recv done !!!")
