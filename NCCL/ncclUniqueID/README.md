@@ -242,6 +242,7 @@ std::shared_ptr<NCCLComm> ProcessGroupNCCL::initNCCLComm(
 #define NCCL_UNIQUE_ID_BYTES 128
 typedef struct { char internal[NCCL_UNIQUE_ID_BYTES]; } ncclUniqueId;
 
+// old version
 NCCL_API(ncclResult_t, ncclGetUniqueId, ncclUniqueId* out);
 ncclResult_t ncclGetUniqueId(ncclUniqueId* out) {
   NCCLCHECK(ncclInit());
@@ -249,6 +250,21 @@ ncclResult_t ncclGetUniqueId(ncclUniqueId* out) {
   ncclResult_t res = bootstrapGetUniqueId((struct ncclBootstrapHandle*)out);
   TRACE_CALL("ncclGetUniqueId(0x%llx)", (unsigned long long)hashUniqueId(*out));
   return res;
+}
+
+// new version
+ncclResult_t ncclGetUniqueId(ncclUniqueId* out) {
+  NCCLCHECK(ncclInit());
+  NCCLCHECK(PtrCheck(out, "GetUniqueId", "out"));
+  struct ncclBootstrapHandle handle;
+  NCCLCHECK(bootstrapGetUniqueId(&handle));
+  // ncclUniqueId and bootstrapHandle don't have the same size and alignment
+  // reset to 0 to avoid undefined data
+  memset(out, 0, sizeof(*out));
+  // copy to avoid alignment mismatch
+  memcpy(out, &handle, sizeof(handle));
+  TRACE_CALL("ncclGetUniqueId(0x%llx)", (unsigned long long)getHash(out->internal, NCCL_UNIQUE_ID_BYTES));
+  return ncclSuccess;
 }
 ```
 
