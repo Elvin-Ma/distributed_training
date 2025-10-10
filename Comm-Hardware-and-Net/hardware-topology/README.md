@@ -48,6 +48,16 @@ PCIe Switch 就是为了解决上述问题而生的。它就像一个网络交�
   - 路径：数据流经的物理链路是NVLink链路，逻辑路径通过NVSwitch。这是一个与PCIe网络完全并行的独立网络。
   - 通信模型：这更像是一个非一致存储访问（NUMA） 架构下的远程内存访问，而不是传统意义上的“DMA复制”。对于程序员来说，它表现为一个**共享的内存空间**.
 
+## CPU 与 PCIe switch 与 PCIe Root Complex
+一个物理CPU内部通常集成一个 PCIe Root Complex，双路服务器示意图如下：<br>
+
+![alt text](images/deepseek_mermaid_20251009_b9e940.png)
+
+
+**PCIe Root Complex:** 这是CPU`内部`的一个部件，它是整个PCIe总线系统的“根”和“大脑”。它负责发起和终止PCIe通信，管理下游的所有PCIe设备。你可以把它看作是最高级别的、集成在CPU内部的“PCIe Switch”。
+
+**外置PCIe Switch芯片**： 这是一种`独立的芯片`，用于扩展Root Complex提供的PCIe通道，将一个x16的插槽扩展成多个x8或x4的插槽.
+
 # NVLink and NVSwitch
 
 **如何通过NVLink Switch 实现全互联**
@@ -65,12 +75,26 @@ PCIe Switch 就是为了解决上述问题而生的。它就像一个网络交�
 - NVSwitch 芯片组连接图
   - 某些 NVSwitch：每个连接 5 个 NVLink 端口
   - 其他 NVSwitch: 每个连接 4 个 NVLink 端口
-  - 总计: 5 + 5 + 4 + 4 + 4 = 18 个 NVLink 端口(全部利用)
+  - 总计: 5 + 5 + 4 + 4 = 18 个 NVLink 端口(全部利用)
 
 ![alt text](images/image-4.png)
 
 
 # IB 设备 和 IPoIB 协议
+
+- NVIDIA的NVSwitch是一个物理芯片，它被焊接在像HGX这样的服务器主板上；
+- HCA(主机通道适配器 host channel adaptor) ： 对应NIC, 为和RDMA技术优化的**超级网卡**;
+- HCA卡, 在电气和逻辑上，正是连接到 PCIe Switch（或CPU内部的PCIe Root Complex）的一个下游端口;
+- 将IB HCA卡插入服务器的PCIe插槽时，也就相当于连接到 PCIe Switch.
+
+**RDMA 硬件通信链路**
+![alt text](images/image-6.png)
+
+*传统的以太网中，我们有 NIC, 在 InfiniBand 网络中，对应的硬件就是 HCA(主机通道适配器)， 专门为高性能计算和RDMA技术优化的“超级网卡”*
+
+**IB 交换机冗余设计，类似于NVSwitch**
+
+![alt text](images/image-7.png)
 
 **相关概念**
 
@@ -83,7 +107,6 @@ PCIe Switch 就是为了解决上述问题而生的。它就像一个网络交�
 | 关注点     | 物理连接状态、速率、LID | IP 地址、子网掩码、MTU  |
 | 配置命令   | ibstatus, ibdev2lid     | ifconfig, ip addr       |
 | 依赖关系   | 必须先有物理连接       | 依赖 IB 设备状态        |
-
 
 
 **IB 设备状态**
