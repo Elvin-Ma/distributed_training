@@ -1,5 +1,33 @@
-# PCIe and PCIe switch
+# PCI 设备 和 PCIe
+GPU 和 NVSwitch 都是 PCIe 设备，它们都连接到 PCIe 总线，并分配了 PCI 配置空间。
 
+因为它们都连接到PCIe总线，并且被系统PCI枚举器发现，分配了PCI配置空间。操作系统通过PCI配置空间来识别设备类型、厂商ID、设备ID等，并加载相应的驱动程序
+
+
+**PCIe是系统集成接口**
+
+- 所有设备都需要通过PCIe与CPU/内存通信
+- 包括GPU、NVSwitch、网卡、存储控制器等
+- PCIe提供了设备发现、资源配置、中断处理等基础功能
+
+**NVLink是专用互连**
+- NVLink是GPU间的专用高速互连
+- 物理上独立于PCIe
+- 但管理上仍然通过PCIe配置空间控制
+
+```shell
+CPU
+  ↕ PCIe
+NVSwitch (PCIe设备)
+  ↕ NVLink (专用互连)
+GPU1 (PCIe设备)    GPU2 (PCIe设备)    GPU3 (PCIe设备)
+```
+> 注释:
+> 所有外设都通过PCIe与CPU通信: CPU → PCIe → [GPU, 网卡, 存储控制器, 声卡, USB控制器...]；
+> NVLink只处理数据交换，不处理设备枚举、资源配置等, 不能替代PCIe；
+> PCIe兼容PCI的配置空间和枚举方式。操作系统和驱动程序通常使用PCI的编程模型来访问PCIe设备。因此，在软件中，我们通常统称为PCI设备，而实际上指的是PCIe设备.
+
+# PCIe and PCIe switch
 ## PCIe - 点对点连接
 
 现代PCIe采用点对点拓扑，每个设备都独享与根复合体（CPU内的PCIe控制器）的通道。
@@ -82,10 +110,45 @@ PCIe Switch 就是为了解决上述问题而生的。它就像一个网络交�
 
 # IB 设备 和 IPoIB 协议
 
+## IB 是什么？
+InfiniBand 不是单一的物理设备，而是一整套网络技术标准体系：
+
+```sh
+InfiniBand 生态系统
+    ├── 物理设备 (硬件)
+    │    ├── HCA (主机通道适配器-NIC网卡) - 如 ConnectX-7
+    │    ├── 交换机 - 如 Mellanox Quantum系列
+    │    ├── 线缆 - 主动光缆、铜缆等
+    │    └── 转接器 - QSFP、QSFP-DD等
+    │
+    ├── 通信协议 (软件/固件)
+    │    ├── 传输协议
+    │    ├── 路由协议
+    │    ├── 管理协议
+    │    └──  Verbs API
+    │
+    └── 管理工具
+         ├── 子网管理器
+         ├── 诊断工具
+         └── 监控系统
+
+# 以太网 vs IB
+
+以太网 (标准)           vs    InfiniBand (标准)
+    ├── 网卡                  ├── HCA
+    ├── 交换机                ├── InfiniBand交换机
+    ├── 网线                  ├── InfiniBand线缆
+    └── TCP/IP协议            └── InfiniBand协议栈
+```
+
+InfiniBand主机通道适配器（HCA，即网卡）、InfiniBand交换机、InfiniBand线缆（如铜缆、光缆）
+
 - NVIDIA的NVSwitch是一个物理芯片，它被焊接在像HGX这样的服务器主板上；
 - HCA(主机通道适配器 host channel adaptor) ： 对应NIC, 为和RDMA技术优化的**超级网卡**;
 - HCA卡, 在电气和逻辑上，正是连接到 PCIe Switch（或CPU内部的PCIe Root Complex）的一个下游端口;
 - 将IB HCA卡插入服务器的PCIe插槽时，也就相当于连接到 PCIe Switch.
+- GPUDirect RDMA允许网络适配器（如InfiniBand HCA）直接访问GPU显存，而无需通过主机内存拷贝。这减少了数据传输的延迟和CPU开销。
+- GDA 和 GPUDirect RDMA :
 
 **RDMA 硬件通信链路**
 ![alt text](images/image-6.png)
@@ -95,6 +158,10 @@ PCIe Switch 就是为了解决上述问题而生的。它就像一个网络交�
 **IB 交换机冗余设计，类似于NVSwitch**
 
 ![alt text](images/image-7.png)
+
+一个HCA 网卡可以连接到不同PCIe Switch 设备.
+
+![alt text](deepseek_mermaid_20251011_aa835c.png)
 
 **相关概念**
 
@@ -163,4 +230,12 @@ ibs110: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 2044
 ```
 
 
+## IB 线缆
+
+| 代际  | 总带宽(单向) | 带宽GB | 单链路速率 | 物理链路数 | 连接器类型  |
+|-------|------------ |--------|------------|------------|-------------|
+| NDR   | 400 Gbps    | 50GB   | 100 Gbps   | 4x         | QSFP-DD     |
+| HDR   | 200 Gbps    | 25GB   | 50 Gbps    | 4x         | QSFP56      |
+| EDR   | 100 Gbps    | 12.5GB | 25 Gbps    | 4x         | QSFP28      |
+| FDR   | 56 Gbps     | 7GB    | 14 Gbps    | 4x         | QSFP+       |
 

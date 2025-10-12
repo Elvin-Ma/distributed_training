@@ -21,6 +21,14 @@
 | PCIe 4.0   | 16.0             | ~1.969                                | ~63 GB/s           |
 | PCIe 5.0   | 32.0             | ~3.938                                | ~126 GB/s          |
 
+>> nccl 中给出的值:
+```c++
+struct kvDict kvDictPciGen[] = {
+  { "2.5 GT/s", 15 }, { "5 GT/s", 30 }, { "8 GT/s", 60 }, { "16 GT/s", 120 }, { "32 GT/s", 240 }, /* Kernel 5.6 and earlier */
+  { "2.5 GT/s PCIe", 15 }, { "5.0 GT/s PCIe", 30 }, { "8.0 GT/s PCIe", 60 }, { "16.0 GT/s PCIe", 120 }, { "32.0 GT/s PCIe", 240 }, { "64.0 GT/s PCIe", 480 },
+  { NULL, 60 /* Default fallback */ } }; // x100 Mbps per lane
+```
+
 
 # 2 InfiniBand带宽规格
 
