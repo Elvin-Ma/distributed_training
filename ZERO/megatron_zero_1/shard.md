@@ -493,7 +493,7 @@ param.main_grad 就是之前建立的 buffer, 是一个高精度的grad 会一�
 - 参数在 DP 进程组等级**本地rank 切片下的梯度缓冲区**中的范围;
 - 参数在其自身内部的范围（即**参数自身的分片**，shard）.
 
-提取当前DP rank 的 param. 如果param 在当前shard 中会得到如下map, 所有buffer 的map 被打包到一个 self.gbuf_ranges 变量里: <br>
+提取**当前 DP rank 的 param**. 如果param 在当前shard 中会得到如下map, 所有buffer 的map 被打包到一个 self.gbuf_ranges 变量里: <br>
 
 ```python
     param_range_map = {}
@@ -506,6 +506,10 @@ param.main_grad 就是之前建立的 buffer, 是一个高精度的grad 会一�
     data = {"param_map": param_range_map}
 
     self.gbuf_ranges.append(data)
+
+    # 长啥样呢？
+    # self.gbuf_ranges[0][(torch.bfloat16, torch.float32)][0]['param_map'])
+    # {param : param_range_map}
 ```
 
 - 相关代码
@@ -644,7 +648,7 @@ param.main_grad 就是之前建立的 buffer, 是一个高精度的grad 会一�
 
 ## 4.2 param 到 gbuf + bucket 的映射
 
-self.model_param_gbuf_map = {param : (gbuf_index, dtype, bucket_index)}
+**self.model_param_gbuf_map = {param : (gbuf_index, dtype, bucket_index)}**
 
 ```python
     @classmethod
@@ -654,9 +658,13 @@ self.model_param_gbuf_map = {param : (gbuf_index, dtype, bucket_index)}
         """
         Create a reverse of the gbuf_ranges, for referencing in opposite direction.
         """
+        # len(self.gbuf_ranges[0][(torch.bfloat16, torch.float32)][0]['param_map'])
         param_gbuf_map = {}
+        # 遍历每个gbuf
         for gbuf_index, gbuf_range_map in enumerate(gbuf_ranges):
+            # (torch.bfloat16, torch.float32), (torch.uint8, torch.float32)
             for dtype, gbuf_range_map_for_all_buckets in gbuf_range_map.items():
+                # ['param_map']
                 for bucket_index, gbuf_range_map in enumerate(gbuf_range_map_for_all_buckets):
                     for param, _ in gbuf_range_map["param_map"].items():
                         assert param not in param_gbuf_map, (
@@ -670,8 +678,12 @@ self.model_param_gbuf_map = {param : (gbuf_index, dtype, bucket_index)}
 ## 4.3 optimizer ranges 的获取
 
 **提取 Local DP rank 的 param**
-local_param_group_map = {} # {param: (group_index, param_index)}
-group_ranges = [{params: []}, {params: []}, ...]
+```python
+# {param: (group_index, param_index)}
+self.model_param_group_index_map = local_param_group_map = {}
+# [{params: []}, {params: []}, ...]
+self.opt_group_ranges = group_ranges
+```
 
 ```python
     @classmethod
@@ -689,8 +701,8 @@ group_ranges = [{params: []}, {params: []}, ...]
         # 全局参数组映射（World param group map）
         # - 存储所有参数的 {模型参数（model_parameter）: 组索引（group_index）} 映射关系。
         # 用途: 构建当前 DP 进程组等级（this DP rank）的参数本地映射（local mapping）。
-        world_param_group_map = {}
-        for group_index, group in enumerate(param_groups):
+        world_param_group_map = {} # {param : group_index}
+        for group_index, group in enumerate(param_groups): # 遍历原始的参数组
             for param in group["params"]:
                 assert param.requires_grad
                 world_param_group_map[param] = group_index
@@ -701,19 +713,21 @@ group_ranges = [{params: []}, {params: []}, ...]
         #   另一组是 “优化器组到其包含的参数” 的映射;
         # 其中，优化器组的索引和参数在组内的顺序对于 checkpoint（检查点）的保存与加载尤为重要。
         local_param_group_map = {} # {param: (group_index, param_index)}
-        # [{params: []}, {params: []}, ...]}, {}, ...]
+        # [{params: []}, {params: []}, ...]}, {}, ...], 每个param_groups 对应一个 'params'
         group_ranges = [{"params": []} for _ in param_groups]
         for gbuf_range_map in gbuf_ranges:
             for dtype, gbuf_range_map_for_all_buckets in gbuf_range_map.items():
                 for gbuf_range_map in gbuf_range_map_for_all_buckets:
                     for param in gbuf_range_map["param_map"]:
-                        group_index = world_param_group_map[param]
-                        group_range = group_ranges[group_index]
-                        group_range["params"].append(param)
+                        group_index = world_param_group_map[param] # param 对应第几个 group
+                        group_range = group_ranges[group_index]    # 拿到这个param 对应的 list
+                        group_range["params"].append(param)        # param 添加到对应 list 中
+                        # 记录下对应的 group_index 和 param_index(在params 列表中的索引)
                         local_param_group_map[param] = (group_index, len(group_range["params"]) - 1)
 
         # Squeeze zero-size group ranges.
         # 查找并保存当前DP rank 中param 原来的param_group
+        # [{param: [], 'orig_group': [], 'orig_group_idx': []}, {}]
         for group_index, group_range in enumerate(group_ranges):
             group_range["orig_group"] = param_groups[group_index]
             group_range["orig_group_idx"] = param_groups[group_index]
@@ -721,7 +735,7 @@ group_ranges = [{params: []}, {params: []}, ...]
         return local_param_group_map, group_ranges
 ```
 
-## 4.4 提取local param 并 构建 main_param
+## 4.4 提取 local param 并 构建 main_param
 
 ### 4.4.1 添加 main_param
 ```python
@@ -741,38 +755,57 @@ group_ranges = [{params: []}, {params: []}, ...]
 
 ### 4.4.2 构建 main_param 和 相应各参数版本
 
-- model_float16_groups = [] # 当前 DP rand 的 原始 bf16 参数
-- model_fp32_groups = []    # 当前 DP rank 的 原始 fp32 参数
-- shard_float16_groups = [] # 当前 DP rank 的 原始 bf16 参数的切片
-- shard_fp32_groups = []    # 当前 DP rank 的 原始 fp32 参数的切片
-- shard_fp32_from_float16_groups = [] # 当前 DP rank 的 bf16 参数切片的高精度版本 即: main_param
+```python
+# 如下这些是list, 对应每一个参数组
+model_float16_groups = [] # 当前 DP rank 的 原始 bf16 参数
+model_fp32_groups = []    # 当前 DP rank 的 原始 fp32 参数
+shard_float16_groups = [] # 当前 DP rank 的 切片 bf16 参数 --> 精度感知优化器时会用
+shard_fp32_groups = []    # 当前 DP rank 的 切片 fp32 参数
+shard_fp32_from_float16_groups = [] # 当前 DP rank 的 bf16 参数切片的高精度版本 即: main_param
+```
 
 ```python
-    if model_param.type() in ['torch.cuda.HalfTensor', 'torch.cuda.BFloat16Tensor']:
-        # Generate sharded model param.
-        shard_model_param = model_param.detach().view(-1)[
-            param_range.start : param_range.end
-        ]
-        # 高精度main_param 的获取
-        shard_main_param = shard_model_param.clone().float()
-        model_param.main_param = shard_main_param
-        model_param.main_param_sharded = True
+# group_range: {'params':[], 'orig_group' : [], 'orig_group_idx' : []}
+for group_range in opt_group_ranges:
+    for model_param in group_range["params"]:
+        if model_param.type() in ['torch.cuda.HalfTensor', 'torch.cuda.BFloat16Tensor']:
+            # Generate sharded model param.
+            # 低精度切片，数据类型不变
+            shard_model_param = model_param.detach().view(-1)[
+                param_range.start : param_range.end
+            ]
+            # 高精度main_param 的获取
+            shard_main_param = shard_model_param.clone().float()
+            model_param.main_param = shard_main_param
+            model_param.main_param_sharded = True
 
-        # Add to group.
-        model_float16_params_this_group.append(model_param)
-        shard_float16_params_this_group.append(shard_model_param)
-        shard_fp32_from_float16_params_this_group.append(shard_main_param)
+            # Add to group.
+            model_float16_params_this_group.append(model_param)
+            shard_float16_params_this_group.append(shard_model_param)
+            shard_fp32_from_float16_params_this_group.append(shard_main_param)
 
-    # fp32 params.
-    elif model_param.type() == 'torch.cuda.FloatTensor':
-        shard_model_param = model_param.view(-1)[param_range.start : param_range.end]
-        model_fp32_params_this_group.append(model_param)
-        shard_fp32_params_this_group.append(shard_model_param)
-        tensor_parallel.copy_tensor_model_parallel_attributes(
-            shard_model_param, model_param
-        )
-        if hasattr(model_param, 'shared'):
-            shard_model_param.shared = model_param.shared
+        # fp32 params.
+        elif model_param.type() == 'torch.cuda.FloatTensor':
+            shard_model_param = model_param.view(-1)[param_range.start : param_range.end]
+            model_fp32_params_this_group.append(model_param)
+            shard_fp32_params_this_group.append(shard_model_param)
+            tensor_parallel.copy_tensor_model_parallel_attributes(
+                shard_model_param, model_param
+            )
+            if hasattr(model_param, 'shared'):
+                shard_model_param.shared = model_param.shared
+
+        # Update optimizer's params.
+        if not config.use_precision_aware_optimizer:
+            group_range["orig_group"]["params"] = [
+                *shard_fp32_params_this_group,
+                *shard_fp32_from_float16_params_this_group,
+            ]
+        else:
+            group_range["orig_group"]["params"] = [
+                *shard_fp32_params_this_group,
+                *shard_float16_params_this_group,
+            ]
 ```
 
 ### 4.4.3 替换原始param_groups
@@ -794,6 +827,43 @@ group_range["orig_group"]["params"] = [
 ```
 
 ## 4.5 相关数据的搬迁
+
+class MixedPrecisionOptimizer step 流程.
+
+```python
+    @torch.no_grad()
+    def step(self):
+        timers = self.config.timers
+
+        found_inf_flag = self.prepare_grads()
+        if found_inf_flag:
+            return False, None, None
+
+        # Clip the main gradients.
+        if timers is not None:
+            timers('optimizer-clip-main-grad', log_level=1).start(
+                barrier=self.config.barrier_with_L1_time
+            )
+        grad_norm = 0.0
+        if self.config.clip_grad > 0.0:
+            grad_norm = self.clip_grad_norm(self.config.clip_grad)
+        if timers is not None:
+            timers('optimizer-clip-main-grad').stop()
+
+        # Count the zeros in the grads.
+        if timers is not None:
+            timers('optimizer-count-zeros', log_level=1).start(
+                barrier=self.config.barrier_with_L1_time
+            )
+        num_zeros_in_grad = self.count_zeros() if self.config.log_num_zeros_in_grad else 0
+        if timers is not None:
+            timers('optimizer-count-zeros').stop()
+
+        success = self.step_with_ready_grads()
+
+        # Successful update.
+        return success, grad_norm, num_zeros_in_grad
+```
 
 ### 4.5.1 main_grad 需要切片到 shard_main_grad 并交给 optimizer 里的 shard_main_param
 
