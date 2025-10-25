@@ -77,8 +77,21 @@ NVLink 的双向特性: <br>
 
 ![nvlink bandwidth](images/image-1.png)
 
+NVLink 发展历程：
+
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+- [参考连接](https://cloud.tencent.com/developer/article/2517231)
 
 ## 3.2 NVSwitch
 NVSwitch 是 NVIDIA 于 2018 年在 DGX-2 中首次推出，它是为了解决多 GPU 通信瓶颈而设计的全互连交换架构，它标志着从 PCIe 和点对点 NVLink 向真正“巨型 GPU”模型的演进，如今已发展到第三代，广泛应用于 DGX A100/H100、Hopper 架构等新一代 AI 超算平台中。
 
 ![nvswitch bandwidth](images/image-2.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+- [参考连接](https://mp.weixin.qq.com/s?__biz=MzI1OTExNzkzNw==&mid=2650480852&idx=3&sn=9c1730bc2ba0262937e29a7096a0697d&chksm=f3811d2cccd9dfae64115574577a78a3875cdf8ef926a79ac1b03232dc910508cff4df37533b&scene=27)

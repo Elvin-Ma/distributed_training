@@ -1,3 +1,9 @@
+# 0 本节点topo 查询
+
+**nvidia-smi topo -m**
+
+![alt text](image.png)
+
 # PCI 设备 和 PCIe
 GPU 和 NVSwitch 都是 PCIe 设备，它们都连接到 PCIe 总线，并分配了 PCI 配置空间。
 
