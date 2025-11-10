@@ -1,0 +1,1 @@
+nvcc tensor.cu -o tc -lcublas -arch=sm_80 -lm
