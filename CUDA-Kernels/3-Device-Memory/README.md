@@ -273,21 +273,23 @@ __global__ void transpose2(const real* A, real* B, const int N) {
 
 # 3 Shared Memory
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共享内存（Shared memory）有 32 个存储体（banks），这些存储体的组织方式是：连续的 32-bit words映射到连续的不同存储体(bank)中。每个存储体的带宽为每个时钟周期 32 bits。<br>
+Shared memory 经常和 L1 cache 共享。因此有几种划分方案。
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共享内存（Shared memory）有 32 个存储体（banks） 对应warp 内的**32个**线程，这些存储体的组织方式是：连续的 32-bit words映射到连续的不同存储体(bank)中。每个存储体的带宽为每个时钟周期 32 bits。<br>
 
 ![alt text](./images/image-18.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共享内存中，连续的 32-bits 字被分配到连续的 **32个bank** 中，这就像电影院的座位一样：<br>
-- 一列座位就相当于一个 bank，所以每行有 32 个座位，在每个座位上可以“坐”一个32-bits的数据(或者多个小于32-bits的数据，如4个char型的数据，2个short型的数据)
+- 一列座位就相当于一个 bank，所以每行有 32 个座位，在每个座位上可以“坐”一个32-bits(4Byte)的数据(或者多个小于32-bits的数据，如4个char型的数据，2个short型的数据)
 - 正常情况下，我们是按照先坐完一行(32个bank的第一行)再坐下一行的顺序来坐座位的，在shared memory 中地址映射的方式也是这样的。上图中内存地址是按照箭头的方向依次映射的：
 
 ## 3.1 Bank conflict
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当一个 warp 的**不同线程访问同一个 bank 中的不同的地址时，就会发生bank 冲突**。如果没有 bank 冲突的话，共享内存的访存速度将会非常的快，大约比全局内存的访问延迟**低100多倍**，但是速度没有寄存器快。
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当**同一个 warp 的**不同线程访问**同一个 bank** 中的不同的地址时，就会发生bank 冲突。如果没有 bank 冲突的话，共享内存的访存速度将会非常的快，大约比全局内存的访问延迟**低100多倍**，但是速度没有寄存器快。
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;然而，如果在使用共享内存时发生了 bank 冲突的话，性能将会降低很多很多。在最坏的情况下，即一个 warp 中的所有线程访问了相同 bank 的32个不同字地址的话，那么这 32 个访问操作将会全部被序列化，大大降低了内存带宽。
 
-- 访问步长(stride)为1，由于每个warp中的线程ID与每个bank的ID一一对应，因此不会产生bank冲突。
+- 访问步长(stride)为1(share-memory 里的步长)，由于每个warp中的线程ID与每个bank的ID一一对应，因此不会产生bank冲突。
 
 ![alt text](./images/image-19.png)
 
@@ -318,22 +320,25 @@ extern __shared__ float shared[];
 float data = shared[baseIndex + stride * tid];
 ```
 
-- 有两种情况，线程 tid 和线程 tid+n **会访问相同的bank**：
-  - stride * n 是 bank 的数量(即32)的整数倍;
-  - n 是 32 / d 的整数倍(d是32和s的最大公约数);
-  - n 表示 和 tid 相差 n 个线程的另一个线程;
+有两种情况，线程 tid 和线程 tid+n **会访问相同的bank**：
+  1. stride * n 是 bank 的数量(即32)的整数倍;
+  2. n 是 32 / d 的整数倍(d是32和stride的最大公约数);<br>
+
+其中:
+  - n 表示 和 tid 相差 n 个线程的另一个线程; <br>
   - stride 指的是两个相邻线程读取的元素在shared memory中的步长.
 
-*访问相同bank 是bank conflict 的必要条件，但不是充分条件，bank conflict 的线程还必须在同一个wrap里*
+>访问相同bank 是bank conflict 的必要条件，但不是充分条件，bank conflict 的线程还必须在**同一个wrap里**
 
 
 **推论1：如果 tid 与 tid+n 位于同一个warp时，且访问相同bank时，就会发生bank冲突，相反则不会。**
 
 **推论2：当访问步长s为奇数时，就不会发生bank冲突。**
 
-*只有warp的大小(即32) ≤ 32/d时，才不会有bank冲突，而只有当**d等于1时**才能满足这个条件。要想让32和s的最大公约数d为1，**s必须为奇数**。* <br>
+**结论** <br>
+>只有warp的大小(即32) ≤ 32/d时，才不会有bank冲突，而只有当**d等于1时**才能满足这个条件。要想让32和s的最大公约数d为1，**stride必须为奇数**。<br>
 
-> 通俗点就是两个相邻线程threadIdx.x 访问shared memory 的 stride 需要时奇数就可以避免bank confilct.
+> 通俗点就是两个相邻线程threadIdx.x 访问shared memory 的 stride 需要是奇数就可以避免bank confilct.
 
 ## 3.3 example1： 规约算法
 
@@ -400,7 +405,7 @@ __global__ void NBC_addKernel2(const int *a, int *r) {
       // 相邻thread stride = 1
       cache[cacheIndex] += cache[cacheIndex + i];
     }
-    __syncthreads();
+    __syncthreads(); // 跨warp共享数据时才需要使用 __syncthreads()
   }
 
   // copy the result of reduce to global memory
@@ -431,6 +436,8 @@ __global__ void transpose4(const real *src, real *dst, const int N)
     {
         s_mat[threadIdx.y][threadIdx.x] = src[ty * N + tx];
     }
+
+    // warp 间有数据依赖时需要使用 __syncthreads()
     __syncthreads();
 
     if (tx < N && ty < N)
@@ -441,6 +448,81 @@ __global__ void transpose4(const real *src, real *dst, const int N)
     }
 }
 ```
+
+# 4 寄存器 ： Register
+
+## 4.1 A100
+
+| 项目 | 规格/分析 |
+| ---- | -------- |
+| 每个 SM 的 32 位寄存器文件总大小 | 64 KiB 或 65,536 个 32 位寄存器 |
+| 每个 thread 最大寄存器数量 | **255 个**（这是编译器的硬性限制，由架构定义） |
+| 每个 block 最大寄存器数量 | 64 KiB（即 65,536 个寄存器）。这个限制通常远高于实际可能达到的值，因为首先会受到 SM 总资源的限制。 |
+| 每个 SM 最大线程数 | 2,048 个 |
+| 每个 SM 最大线程块数 | 32 个 |
+| 每个 block 线程数上限 | 1024 个（与 H100 相同）|
+| SM 个数  | 108 |
+| 每个 SM Tensor core 个数 | 4个 |
+
+- 寄存器对线程个数的影响
+
+如果一个kernel每个线程使用 **32 个**寄存器，那么一个 SM 最多可以支持 65,536 / 32 = 2,048 个线程。这正好达到了 A100 每个 SM 的最大线程数上限。
+
+如果每个线程使用 64 个寄存器，则 65,536 / 64 = 1,024 个线程。此时，虽然线程数未达到 SM 上限，但寄存器已成为限制因素，SM 无法驻留更多的线程块。
+
+- 寄存器对SM内线程块数量的影响
+
+一个线程块有 256 个线程，每个线程使用 32 个寄存器。那么一个线程块需要 256 * 32 = 8,192 个寄存器。一个 SM 可以支持 65,536 / 8,192 = 8 个这样的线程块。
+
+## 4.2 H100
+
+| 项目 | 规格/分析 |
+| ---- | -------- |
+| 每个 SM 的 32 位寄存器文件总大小 | **128 KB / 131,072 个** 32 位寄存器（是 A100 的**两倍**） |
+| 每个 thread 最大寄存器数量 | 255 个（与 A100 相同） |
+| 每个 block 最大寄存器数量 | 64 KiB（即 65,536 个寄存器）。注意，虽然 SM 总资源翻倍，但单个线程块的寄存器上限与 A100 相同 |
+| 每个 SM 最大thread数 | 2,048 个（与 A100 相同） |
+| 每个 SM 最大 block 数 | 48 个（比 A100 的 32 个更多） |
+| 每个 block 线程数上限 | 1024 个（与 A100 相同）|
+| SM 个数  | 144 个 |
+| 每个 SM Tensor Coreg 数量 | 4 个 |
+
+H100 的单个 Block 线程数上限仍为 1024，但通过增加 SM 的 Block 槽位数（48 个）和寄存器总量，提升了整体并发能力。例如，H100 的 SM 可同时运行 48 个 256 线程的 Block（总计 12,288 线程），而 A100 仅能运行 32 个（总计 8,192 线程）.
+
+
+# 5 向量化数据加载与存储
+
+向量化加载（Vectorized Loading） 是**提升内存访问效率**的核心优化技术 —— 它让线程（或线程束 Warp）通过单条向量指令**批量加载连续数据**，`充分匹配 GPU 内存事务（Memory Transaction）的宽度（128B/256B），减少内存事务数量`，最大化全局内存带宽利用率。其本质是「用向量指令替代标量指令，让单次内存访问承载更多数据」，是「Burst Mode」的关键手段之一。
+
+内存事务: 主流 GPU 的事务宽度为 128B 或 256B（可通过 cudaDeviceProp::memoryBusWidth 查询）。
+
+问题描述：若数据类型更小（如 char=1B），32 个线程（一个warp）仅加载 32B，仅利用 128B 事务的 25% 带宽。
+
+解决思路：向量化加载
+
+- 让单个线程加载 4 个 char（char4=4B），32 个线程仍加载 32×4B=128B，完全利用事务带宽 ——核心是通过向量类型让单次访问的数据量与事务宽度匹配。
+- float4 时： 一个Warp 可加载 32×4=128 个 float（512B），需 4 个 128B 事务。内存带宽利用率还是100%， 但需要的线程是原来的1/4, **减少了线程启动开销，在线程数不变的情况下，数据吞吐量提升了4倍。**
+
+| 基础类型 | 向量类型（2 元素） | 向量类型（4 元素） | 向量类型（8 元素） | 向量类型（16 元素） |
+|----------|--------------------|--------------------|--------------------|---------------------|
+| char     | char2              | char4              | char8              | char16              |
+| short    | short2             | short4             | short8             | short16             |
+| int      | int2               | int4               | int8               | int16               |
+| float    | float2             | float4             | float8             | float16             |
+| double   | double2            | double4            | double8            | double16            |
+
+要不要我帮你生成一份**带高亮重点类型**的优化版Markdown表格？
+
+使用案例：
+```c++
+float4 vec = make_float4(1.0f, 2.0f, 3.0f, 4.0f);
+// 可通过 .x/.y/.z/.w 或数组下标访问元素
+printf("%f, %f\n", vec.x, vec.z); // 输出 1.000000, 3.000000
+printf("%f, %f\n", vec[0], vec[3]); // 输出 1.000000, 4.000000
+```
+
+
+
 
 
 
