@@ -259,7 +259,7 @@ ncclResult_t ncclTopoSearchInit(struct ncclTopoSystem* system) {
 
 ## 2.2 ncclTopoComputeCommCPU
 
-**功能：**为通信实例（ncclComm）初始化 CPU 相关信息（架构和厂商），基于拓扑中的 CPU 节点属性，用于后续通信优化（如 CPU 参与的数据中转适配）。
+**功能:** 为通信实例（ncclComm）初始化 CPU 相关信息（架构和厂商），基于拓扑中的 CPU 节点属性，用于后续通信优化（如 CPU 参与的数据中转适配）。
 
 ```c++
 ncclResult_t ncclTopoComputeCommCPU(struct ncclComm* comm) {
@@ -993,13 +993,12 @@ ncclResult_t ncclTopoCompareGraphs(struct ncclTopoSystem* system, struct ncclTop
 
 然后看下多机场景下，比如两机十六卡场景，这个时候有网卡，所以ncclTopoSearchParams设置参数为：<br>
 
-- backToFirstRank = -1;
-- backToNet = 7;
+- backToFirstRank = -1; # 不返回 第一个结点
+- backToNet = 7; # 级别7
 
-**网卡和channel 的关系**
+两机16卡下, 网卡和channel 的关系:
 
 - 在环形拓扑（NCCL_TOPO_PATTERN_RING）中，每个通道（channel）通常需要两个网卡连接点；
-- 
 
 ### 2.4.1 ncclTopoSearchRec 的 ncclTopoSearchRecNet 分支
 ncclTopoSearchRec直接执行**ncclTopoSearchRecNet**.
@@ -1104,7 +1103,7 @@ ncclResult_t ncclTopoSearchRecNet(struct ncclTopoSystem* system, struct ncclTopo
 }
 ```
 
-ncclTopoSearchTryGpu还是会调用ncclTopoSearchRecGpu，当没有遍历完所有GPU节点时，仍然通过递归执行ncclTopoSearchRecGpu来填充graph->intra，最后遍历所有GPU之后step等于7，即backToNet，这里首先拿出来起始网卡，即网卡0，如果搜索参数支持crossNic的话就选一个合法的网卡即可，如果不支持的话就判断网卡0是否合法，合法的话将网卡0填充到graph->inter，一个环就搜索完成了。
+ncclTopoSearchTryGpu还是会调用ncclTopoSearchRecGpu，当没有遍历完所有GPU节点时，仍然通过递归执行ncclTopoSearchRecGpu来填充graph->intra，最后遍历所有GPU之后step等于7，即**backToNet，这里首先拿出来起始网卡，即网卡0**，如果搜索参数支持crossNic的话就选一个合法的网卡即可，如果不支持的话就判断网卡0是否合法，合法的话将网卡0填充到graph->inter，一个环就搜索完成了。
 
 ### 2.4.2 ncclTopoSearchRecGpu 对 if (step == backToNet)  的处理
 ```c++
@@ -1149,7 +1148,7 @@ ncclResult_t ncclTopoSearchRecGpu(struct ncclTopoSystem* system, struct ncclTopo
       struct ncclTopoNode* startNet = system->nodes[NET].nodes+startNetIndex;
       int netCount;
       NCCLCHECK(ncclTopoSelectNets(system, graph->typeInter, g, nets, &netCount));
-      for (int i=0; i<netCount; i++) {
+      for (int i=0; i<netCount; i++) { // 变量所有net
         int n = nets[i];
         struct ncclTopoNode* net = system->nodes[NET].nodes+n;
         if (graph->pattern == NCCL_TOPO_PATTERN_TREE && net->id != startNet->id) continue; // Trees are symmetric
@@ -1171,8 +1170,9 @@ ncclResult_t ncclTopoSearchRecGpu(struct ncclTopoSystem* system, struct ncclTopo
 
         NCCLCHECK(ncclTopoFollowPath(system, graph, GPU, g, NET, n, 1, &net));
         graph->bwInter = bwInterSave;
-        if (net) { // 法的话将网卡0填充到graph->inter，一个环就搜索完成了
+        if (net) {            // 合法的话将网卡0填充到graph->inter，一个环就搜索完成了
           graph->inter[graph->nChannels*2+1] = net->id;
+          // 往下递归
           NCCLCHECK(ncclTopoSearchRecGpu(system, graph, saveGraph, gpu, step, nextBackToNet, backToFirstRank, forcedOrder, time));
 
           if (graph->pattern == NCCL_TOPO_PATTERN_BALANCED_TREE) graph->bwInter /= 2;
@@ -1189,10 +1189,10 @@ ncclResult_t ncclTopoSearchRecGpu(struct ncclTopoSystem* system, struct ncclTopo
 ```
 
 ### 2.4.3 回到ncclTopoSearchRecNet
-接下来会尝试复制刚刚搜索出来的环，当搜索出一个答案后，回到第一次ncclTopoSearchRecNet;<br>
-接下来会尝试从离网卡0最近的GPU开始搜索，而不是从GPU0开始，假设为GPUn;<br>
-这里会先判断GPUn到PCIe switch的双向带宽是否还有空闲，如果有空闲的话才从GPUn开始搜索;<br>
-但是和这里的注释表述不太相符，注释的意思是说不会将一个GPU既用来发送，又用来接收（说这种情况会影响带宽，这一点比较疑惑）。<br>
+- 接下来会尝试复制刚刚搜索出来的环，当搜索出一个答案后，回到第一次ncclTopoSearchRecNet;<br>
+- 接下来会尝试从离网卡0最近的GPU开始搜索，而不是从GPU0开始，假设为GPUn;<br>
+- 这里会先判断GPUn到PCIe switch的双向带宽是否还有空闲，如果有空闲的话才从GPUn开始搜索;<br>
+- 但是和这里的注释表述不太相符，注释的意思是说不会将一个GPU既用来发送，又用来接收（说这种情况会影响带宽，这一点比较疑惑）。<br>
 
 ```c++
 /**
