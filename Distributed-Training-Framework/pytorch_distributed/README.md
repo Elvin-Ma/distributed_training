@@ -150,8 +150,138 @@ example: <br>
             kwargs or {},
         )
 ```
-### redistribute 机制
 
+- __torch_dispatch__ 是通过 DispatchKey::Python 控制的。
+- DispatchKey::Python 的优先级较高(**比Autograd要高**)，仅次于一些特殊的元机制键（如 BackendSelect），但高于后端实现键（如 CPU 和 CUDA）。
+- 这种优先级设计保证了 __torch_dispatch__ 能够拦截绝大多数操作，并完全控制自定义张量的行为。
+
+> 注释: 相关函数的优先级
+> 以 PyTorch Dispatcher 的优先级顺序（从高到低）为例，DispatchKey::Python 和 Autograd 的位置关系如下：
+
+```sh
+元机制key（优先级最高）:
+DispatchKey::InplaceOrView
+DispatchKey::BackendSelect
+
+Frontend Keys（前端键，DispatchKey::Python 属于这一部分）:
+DispatchKey::Python（用于 __torch_dispatch__）
+DispatchKey::CompositeExplicitAutograd
+DispatchKey::CompositeImplicitAutograd
+
+Autograd Keys:
+DispatchKey::AutogradCPU
+DispatchKey::AutogradCUDA
+
+其他设备相关的 Autograd 键:
+...
+
+后端实现键:
+DispatchKey::CPU
+DispatchKey::CUDA
+其他后端实现...
+默认键:
+
+DispatchKey::Undefined
+```
+
+### __torch_dispatch__ 的工作原理
+
+PyTorch 设计 DispatchKey::Python 的唯一核心目的，就是为 __torch_dispatch__ 提供「C++ Dispatcher 到 Python 自定义逻辑」的路由通道。其工作原理可以概括为：<br>
+1. 当你给 Tensor 子类实现 __torch_dispatch__ 方法时，PyTorch 会自动为该 Tensor 关联 DispatchKey::Python（无需手动设置）；
+2. 当算子调用进入 C++ Dispatcher 后，Dispatcher 会检查输入 Tensor 的「DispatchKey 集合」—— 若存在 DispatchKey::Python，则优先查找该 key 对应的处理逻辑（也就是你实现的 __torch_dispatch__）；
+3. 若未找到匹配的 __torch_dispatch__（比如 Tensor 子类没实现该方法），Dispatcher 会按优先级回落至其他 DispatchKey（如 CPU/CUDA 设备键、Autograd 键等）。
+
+### __torch_dispatch__ 如何起作用的呢？
+
+通过所有Tenosor 都继承 torch._C._TensorMeta 来起作用，c++ 中会调用 THPVariableMetaType_init：
+
+```c++
+int THPVariableMetaType_init(PyObject* cls, PyObject* args, PyObject* kwargs) {
+  if (PyType_Type.tp_init(cls, args, kwargs) < 0) {
+    return -1;
+  }
+  // It is important for all three of these to be overriden correctly for the
+  // resurrection checks to properly happen. In particular, an older version
+  // was not overriding tp_clear here. This lead to the default subtype_clear
+  // running on the Tensor object (as only TensorBase tp_clear was custom),
+  // clearing the __dict__ field, before the TensorBase custom clear was called
+  // and would properly detect the resurrect.
+  // See https://github.com/pytorch/pytorch/issues/136358 for the exact behavior
+  ((PyTypeObject*)cls)->tp_dealloc = (destructor)THPVariable_subclass_dealloc;
+  ((PyTypeObject*)cls)->tp_traverse =
+      (traverseproc)THPVariable_subclass_traverse;
+  ((PyTypeObject*)cls)->tp_clear = (inquiry)THPVariable_subclass_clear;
+
+  // Don't do anything for the base Tensor class
+  if (!THPVariableClass) {
+    return 0;
+  }
+
+  // Forbid subclassing _TensorBase directly
+  py::tuple mro =
+      py::reinterpret_borrow<py::tuple>(((PyTypeObject*)cls)->tp_mro);
+  bool is_subclass_of_thpvariable = false;
+  for (py::handle h : mro) {
+    if (h.ptr() == THPVariableClass) {
+      is_subclass_of_thpvariable = true;
+      break;
+    }
+  }
+  if (!is_subclass_of_thpvariable) {
+    PyErr_SetString(PyExc_RuntimeError, "Cannot subclass _TensorBase directly");
+    return -1;
+  }
+
+  // If the user provided a torch_dispatch implementation, disable
+  // torch_function.
+  py::object torch_dispatch_impl = py::reinterpret_steal<py::object>(
+      PyObject_GetAttrString(cls, "__torch_dispatch__"));
+  py::object torch_dispatch_default = py::reinterpret_steal<py::object>(
+      PyObject_GetAttrString(THPVariableClass, "__torch_dispatch__"));
+  if (torch_dispatch_impl.ptr() != torch_dispatch_default.ptr()) {
+    py::object torch_function_impl = py::reinterpret_steal<py::object>(
+        PyObject_GetAttrString(cls, "__torch_function__"));
+    py::object torch_function_default_bound = py::reinterpret_steal<py::object>(
+        PyObject_GetAttrString(THPVariableClass, "__torch_function__"));
+
+    // Since our __torch_function__ is a classmethod, we need to "unbound" the
+    // method to get the raw function
+    py::object torch_function_default = py::reinterpret_steal<py::object>(
+        PyObject_GetAttrString(torch_function_default_bound.ptr(), "__func__"));
+
+    // User-defined __torch_function__ might not be a classmethod
+    if (PyObject_HasAttrString(torch_function_impl.ptr(), "__func__")) {
+      torch_function_impl = py::reinterpret_steal<py::object>(
+          PyObject_GetAttrString(torch_function_impl.ptr(), "__func__"));
+    }
+    if (torch_function_impl.ptr() == torch_function_default.ptr()) {
+      PyObject_SetAttrString(
+          cls, "__torch_function__", torch::disabled_torch_function_impl());
+    }
+  }
+
+  return 0;
+}
+```
+
+给tensor 设置上key 后就可以Dispatch 到
+
+```c++
+  // */pytorch/torch/csrc/autograd/python_variable.cpp
+  var.unsafeGetTensorImpl()->set_python_dispatch(true);
+
+  // */pytorch/torch/include/c10/core/TensorImpl.h
+  void set_python_dispatch(bool k) {
+    if (k) {
+      key_set_ = key_set_.add(c10::python_ks);
+    } else {
+      key_set_ = key_set_ - c10::python_ks;
+    }
+  }
+```
+
+
+### redistribute 机制
 `redistribute` 函数用于执行必要的集体通信操作，将当前的 DTensor 从其当前的分片布局（placements）重新分配到新的分片布局，或者从当前的设备网格（DeviceMesh）迁移到新的设备网格。例如，我们可以通过为设备网格的每个维度指定 `Replicate` 分片布局，将一个分片（Sharded）的 DTensor 转换为复制（Replicated）的 DTensor。
 
 当在一个设备网格维度上从当前分片布局重新分配到新的分片布局时，我们将执行以下操作，包括通信集体操作或本地操作：
