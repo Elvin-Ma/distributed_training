@@ -45,7 +45,7 @@ GFLOPs at matrix size **4096x4096**:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`线程块中的线程数量可以通过一个通常称为 blockDim 的变量来配置`，该变量是一个由三个整数组成的向量。该向量的各个条目分别指定了 blockDim.x、blockDim.y 和 blockDim.z 的大小，具体可视化如下：<br>
 
-![alt text](image.png)
+![alt text](./images/image.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类似地，网格（grid）中的线程块（block）数量可以通过 gridDim 变量来配置。当我们从主机（在加速器术语中，主机指 CPU，设备指加速器，此处即 GPU）启动一个新的核函数（kernel）时，它会**创建一个单一的网格**，其中`包含所指定的线程块和线程`。从这里开始，我将只讨论二维的网格和线程块，部分原因是三维结构很少使用，而且三维绘图太难了。重要的是要记住，我们刚才讨论的线程层次结构主要关系到程序的正确性。至于程序性能（我们稍后会看到），将同一线程块中的所有线程视为等同的并不是一个好主意。<br>
 
@@ -85,11 +85,11 @@ __global__ void sgemm_naive(int M, int N, int K, float alpha, const float *A,
 ```
 To visualize this simple kernel: <br>
 
-![alt text](image-1.png)
+![alt text](./images/image-1.png)
 
 **[tile quantization](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#tile-quant)**
 
-![alt text](image-2.png)
+![alt text](./images/image-2.png)
 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这个核函数（kernel）在 A6000 GPU 上处理三个 4092² 大小的 fp32（单精度浮点数）矩阵大约需要 **0.5 秒**。这个kernel是否有优化空间呢？下面我们来做一些与具体实现无关的计算. <br>
@@ -119,7 +119,7 @@ To visualize this simple kernel: <br>
 
 > 548GB 需要传输的时间为 548 / 768 = 0.71s
 
-![alt text](image-3.png)
+![alt text](./images/image-3.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因此总结一下，当我在一块 A6000 GPU 上运行这个内核程序来计算两个 4092×4092 的 float32 类型矩阵相乘时，它仅实现了约 **300GFLOPs**（每秒 3000 亿次浮点运算）的性能。这**相当糟糕**，因为 A6000 的宣传性能是几乎可以达到 30 TFLOPs（每秒 30 万亿次浮点运算）。那么我们该如何提高这个速度呢？一种方法是对内核程序的内存访问模式进行优化，`使全局内存访问能够被合并（coalesced，即组合）为更少的访问次数`。
 
@@ -138,7 +138,7 @@ threadId = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * th
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;然后，**具有相邻 threadId（线程ID）的线程会成为同一个 warp（线程束）的一部分**。下面我尝试用一个包含 8 个线程的较小“warpsize”（真实的 warp 总是包含 32 个线程）来对此进行说明：<br>
 
-![alt text](image-4.png)
+![alt text](./images/image-4.png)
 
 > 我喜欢将 threadId（线程 ID）的三个维度 x、y、z 视为“按列优先（column-major）”排列的，因为在“warp 空间”中，第一个维度 x 是连续的。我不知道其他人是否使用这个术语，但对我来说它能让这个概念更清晰。<br>
 
@@ -147,13 +147,13 @@ threadId = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * th
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;以下是示例：同一个 warp（线程束）中的线程进行的连续内存访问被分组，使得每个 warp 只需使用 2 次 32B 加载即可执行 8 次内存访问：<br>
 
-![alt text](image-5.png)
+![alt text](./images/image-5.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实际上，GPU 支持 32B、64B 和 128B 的内存访问。因此，如果每个线程都从全局内存中加载一个 32 位浮点数，warp 调度器（可能是 MIO）可以将这 **32*4B=128B** 的加载合并为**一次事务(transation)**。这只有`在加载的浮点数在内存中是连续的，且访问是对齐的情况下才可能实现`。如果访问不是连续的，或者由于其他原因无法实现合并访问，那么 GPU 将执行尽可能多的 32B 加载操作来获取所有浮点数，从而导致大量带宽浪费。在对我们的简单内核（naive kernel）进行性能分析时，我们可以观察到非合并访问的不利影响，因为此时我们仅实现了 15GB/s 的全局内存（GMEM）吞吐量。
 
 > 针对 GPU 的`全局内存合并访问进行优化`，与针对 CPU 的缓存行利用率进行优化有很多相似之处。有趣的是，为了实现合并访问，warp 内的线程必须访问连续的地址，但这些访问在 warp 内不必是连续的。下面进行说明：
 
-![alt text](image-6.png)
+![alt text](./images/image-6.png)
 
 回顾之前的内核（kernel）代码，我们为线程分配 C 的元素时是这样做的：<br>
 
@@ -164,11 +164,11 @@ const uint y = blockIdx.y * blockDim.y + threadIdx.y; // C 为 C 中的列
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因此，同一 warp 中的线程（即 threadIdx.x 连续的线程）会从内存中**非连续地加载矩阵 A 的行**。简单内核（naive kernel）访问矩阵 A 内存的模式更像是如下所示：<br>
 
-![alt text](image-7.png)
+![alt text](./images/image-7.png)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;为了实现合并访问（coalescing），我们可以更改将结果矩阵 C 的位置分配给线程的方式。这种对全局内存访问模式的更改如下所示：<br>
 
-![alt text](image-8.png)
+![alt text](./images/image-8.png)
 
 **直接替换naive 代码的前两行即可实现合并coalesced 的访问**：<br>
 
@@ -246,7 +246,7 @@ void run_sgemm_coalesce(int M, int N, int K, float alpha, float *A, float *B,
 
 以下是一张关于 A100 GPU 内存层次结构的有用示意图：
 
-![alt text](image-9.png)
+![alt text](./images/image-9.png)
 
 > 注释：SMEM 大小可配置，于L1 cache 进行trade-off.
 
@@ -262,7 +262,7 @@ Shared Memory 属于片上内存，与Global Memory 相比具有显著的低带�
 
 如下图所示: <br>
 
-![alt text](image-10.png)
+![alt text](./images/image-10.png)
 
 核心代码如下：<br>
 
@@ -320,7 +320,7 @@ __global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上述kernel在A6000 上可以达到 ~2200GFLOPS 的性能。 但距离A6000 vector core 的 性能上限 ~30 TFLOPS 还差很多。从下面的 roofline 图可明显看出：<br>
 
-![alt text](image-11.png)
+![alt text](./images/image-11.png)
 
 在32 chunksize下，一个block中使用 $2 x 32 x 32 x 4B= 8 kB$ 的shared memory 大小. A6000 GPU 上每个block 最多使用 48 kB 的shared memory。因此，上述kernel 还远远低于上限。这可能不是一个问题，因为增加per-block 的shared-memory 使用量也可能有缺点。每个流式多处理器（SM）最多有**100KB**的共享内存（SMEM）可用。这意味着，如果我们修改内核以使用全部48KB的SMEM，则每个SM同时**只能保持两个块的加载状态**。在CUDA术语(parlance)中，`增加每个块对SMEM的使用率可能会降低占用率`。占用率(occupancy)被定义为`每个SM上活跃线程束的数量与每个SM上可能的最大活跃线程束数量之比`。
 
@@ -334,6 +334,3 @@ __global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
 Kernel 3 Occupancy Calculation:
 
 以下是与我的GPU相关的硬件参数，这些参数是通过cudaGetDeviceProperties API获取的（多处理器是我们之前讨论过的SMs）：<br>
-
-
-

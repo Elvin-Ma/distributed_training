@@ -1,3 +1,12 @@
+# 前言
+
+- 编译方法 <br>
+
+```sh
+cd readme_cuda_demo
+nvcc -arch=sm_80 matmul_v8.cu -o matmul_v8.out
+```
+
 # 0 cpu matmul
 ```c++
 #include <stdio.h>
