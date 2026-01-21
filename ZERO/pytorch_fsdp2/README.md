@@ -78,6 +78,10 @@ with torch.no_grad():
 FSDPState _lazy_init 完成哪些初始化呢?
 
 
+**在 lazy_init 过程中，会调用 _init_shared_state() 方法，将所有状态的 _state_ctx 设置为根状态的上下文**
+![alt text](image-2.png)
+
+
 |初始化内容|作用|
 |:----|:----|
 |根状态确定|协调分布式训练的核心角色|
