@@ -79,6 +79,10 @@ FSDPState _lazy_init 完成哪些初始化呢?
 
 
 **在 lazy_init 过程中，会调用 _init_shared_state() 方法，将所有状态的 _state_ctx 设置为根状态的上下文**
+- lazy_init 在模型运行的_root_pre_forward 中进行；
+- _root_pre_forward 在每一层的 _pre_forward 中进行;
+- lazy_init 通过 "if self._is_root is not None" 设置只进行一次.
+
 ![alt text](image-2.png)
 
 
