@@ -12,8 +12,8 @@ CUDA 默认的 `CUDACachingAllocator` 管理一个全局内存池，所有 tenso
 // c10/core/CachingDeviceAllocator.h
 using CaptureId_t  = unsigned long long;
 using MempoolId_t  = std::pair<CaptureId_t, CaptureId_t>;
-//                              ^first            ^second
-//                              uuid_ (CUDAGraph自动创建)   uid_ (用户主动创建)
+//                             ^first                ^second
+//                             uuid_(CUDAGraph自动创建) uid_ (用户主动创建)
 
 
 struct TORCH_CUDA_CPP_API MemPool {
