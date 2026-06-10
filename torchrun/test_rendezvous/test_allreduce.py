@@ -8,10 +8,10 @@ import torch.distributed as dist
 def main():
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))
     group_rank = int(os.environ.get("GROUP_RANK", "0"))
-    device = torch.device(f"musa:{local_rank}")
-    torch.musa.set_device(local_rank)
+    device = torch.device(f"cuda:{local_rank}")
+    torch.cuda.set_device(local_rank)
 
-    dist.init_process_group(backend="mccl", device_id=device)
+    dist.init_process_group(backend="cuda", device_id=device)
     dist.barrier(device_ids=[local_rank])
 
     rank = dist.get_rank()
@@ -19,7 +19,7 @@ def main():
 
     tensor = torch.tensor([rank + 1], dtype=torch.float32, device=device)
     dist.all_reduce(tensor, op=dist.ReduceOp.SUM)
-    torch.musa.synchronize()
+    torch.cuda.synchronize()
 
     expected = world_size * (world_size + 1) / 2
     assert tensor.item() == expected, (
@@ -35,7 +35,7 @@ def main():
         time.sleep(5)
         print(f"=========== run step: {i} rank : {rank}", flush=True)
         # dist.all_reduce(tensor, op=dist.ReduceOp.AVG)
-        # torch.musa.synchronize()
+        # torch.cuda.synchronize()
 
     dist.destroy_process_group()
 
