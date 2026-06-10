@@ -965,3 +965,35 @@ rank0 multi_set 1250 个 assigned_ranks
 Store 忙、网络抖动、rank0 压力大：
   数秒甚至更高
 ```
+
+# 10 torchrun 日志控制
+- --redirects=3
+- --tee=3
+
+```sh
+torchrun_args=(
+  --nnodes="${NNODES}"
+  --nproc_per_node="${NPROC_PER_NODE}"
+  --node_rank="${NODE_RANK}"
+  --rdzv_backend="${RDZV_BACKEND}"
+  --rdzv_endpoint="${MASTER_ADDR}:${MASTER_PORT}"
+  --rdzv_id="${RDZV_ID}"
+)
+
+if [[ -n "${TORCHRUN_LOG_DIR}" ]]; then
+  mkdir -p "${TORCHRUN_LOG_DIR}"
+  torchrun_args+=(
+    --log_dir="${TORCHRUN_LOG_DIR}"
+    # 0: 不重定向。stdout/stderr 默认直接走控制台;
+    # 1: 重定向 stdout 到文件(仅写stdout.log);
+    # 2: 重定向 stderr 到文件(仅写stderr.log);
+    # 3: 重定向 stdout 和 stderr 到文件(stdout 和 stderr 分别写入两个文件);
+    --redirects=3
+    # 0: 不 tee, 日志如果被 redirect 到文件，就只写文件，不实时打印回终端;
+    # 1: tee stdout。stdout 会写到 stdout.log，同时实时打印到终端;
+    # 2: tee stderr。stderr 会写到 stderr.log，同时实时打印到终端;
+    # 3: tee stdout 和 stderr。stdout 和 stderr 会写到两个文件，同时实时打印到终端;
+    --tee=1
+  )
+fi
+```
