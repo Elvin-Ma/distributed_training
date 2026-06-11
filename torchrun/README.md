@@ -14,6 +14,8 @@
 这类情况不是“rank 卡住不响应”，而是**连接明确断了**，所以`不需要`等 init_process_group(timeout=...) 里的 ProcessGroup timeout。
 
 ## 1.3 timeout 与 network error
+- 重点: timeout 时经常发生在退出进程通信操作已经下发，但kernel 还没执行; 此时对应进程支持到通信kernel 时不会报网络错误.
+
 | 现象 | 更可能 |
 | --- | --- |
 | 某 rank 日志里更早有 exception / OOM / killed / abort | network / remote-exit |
