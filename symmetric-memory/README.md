@@ -401,7 +401,7 @@ class _SymmetricMemory:
 ```
 
 
-## 1.6 SymmetricMemory Tensor 声明周期管理
+## 1.6 SymmetricMemory Tensor 生命周期管理
 
 1. local symmetric tensor 创建
 
@@ -812,6 +812,60 @@ class CUDASymmetricMemoryAllocator : public SymmetricMemoryAllocator {
 
 ## 2.6 barrier and signal sync
 
+```sh
+# signal pads channel 0
+rank 0: [0, 0, 0, 0]
+rank 1: [0, 0, 0, 0]
+rank 2: [0, 0, 0, 0]
+rank 3: [0, 0, 0, 0]
+
+# rank 0 put signal:
+rank 0: [1, 0, 0, 0]
+rank 1: [1, 0, 0, 0]
+rank 2: [1, 0, 0, 0]
+rank 3: [1, 0, 0, 0]
+# rank 1 put signal:
+rank 0: [0, 1, 0, 0]
+rank 1: [0, 1, 0, 0]
+rank 2: [0, 1, 0, 0]
+rank 3: [0, 1, 0, 0]
+# rank 2 put signal:
+rank 0: [0, 0, 1, 0]
+rank 1: [0, 0, 1, 0]
+rank 2: [0, 0, 1, 0]
+rank 3: [0, 0, 1, 0]
+# rank 3 put signal:
+rank 0: [1, 0, 0, 1]
+rank 1: [1, 0, 0, 1]
+rank 2: [1, 0, 0, 1]
+rank 3: [1, 0, 0, 1]
+
+# ===================================
+# rank 0 wait signal:
+rank 0: [1, 1, 1, 1]
+rank 1: [0, 0, 0, 0]
+rank 2: [0, 0, 0, 0]
+rank 3: [0, 0, 0, 0]
+
+# rank 1 wait signal:
+rank 0: [0, 0, 0, 0]
+rank 1: [1, 1, 1, 1]
+rank 2: [0, 0, 0, 0]
+rank 3: [0, 0, 0, 0]
+
+# rank 2 wait signal:
+rank 0: [0, 0, 0, 0]
+rank 1: [0, 0, 0, 0]
+rank 2: [1, 1, 1, 1]
+rank 3: [0, 0, 0, 0]
+
+# rank 3 wait signal:
+rank 0: [0, 0, 0, 0]
+rank 1: [0, 0, 0, 0]
+rank 2: [0, 0, 0, 0]
+rank 3: [1, 1, 1, 1]
+```
+
 ### 2.6.1 barrier_kernal
 
 - collective 级别的同步，所有rank 上的同步.
@@ -913,7 +967,7 @@ static __global__ void put_signal_kernel(
 
 // 不断尝试把该地址上的 uint32_t 从 0 CAS 成 1;
 // 如果地址当前不是 0，说明上一个 signal 还没被对方消费掉，就会继续等；
-// 超过 timeout_ms 后返回 false.
+// 超过 timeout_ms 或 原来就是1 则返回 false.
 template <std::memory_order Sem>
 __device__ __forceinline__ bool try_put_signal(
     uint32_t* addr,
