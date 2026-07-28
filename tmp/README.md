@@ -263,7 +263,7 @@ GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformer
 - arXiv: https://arxiv.org/abs/2210.17323
 - GitHub: https://github.com/IST-DASLab/gptq
 
-它解决什么问题
+- 它解决什么问题
 
 普通 round-to-nearest 量化是：
 
@@ -275,7 +275,7 @@ X W_fp ≈ X W_q
 
 其中 X 是校准数据跑出来的 activation。GPTQ 的目标就是：让量化后的 Linear 层输出尽量接近原始层输出。
 
-核心原理
+- 核心原理
 
 GPTQ 基于二阶近似。对某一层 Linear：
 
@@ -291,12 +291,14 @@ H = X^T X
 
 这里的 H 可以理解为 Hessian 的近似，用来衡量不同权重通道对输出误差的影响。
 
-量化时，GPTQ 不是把所有权重独立 round 完就结束，而是：
+量化时，GPTQ 不是把所有权重独立 round 完就结束，而是：<br>
 
+```sh
 1. 选一个权重列或 block 进行量化；
 2. 计算这一步引入的量化误差；
 3. 根据 Hessian 近似，把误差补偿到后续还没量化的权重上；
 4. 继续量化下一列或下一个 block。
+```
 
 直观上：
 
