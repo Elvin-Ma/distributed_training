@@ -1,4 +1,4 @@
-# 1 pytorch ProcessGroupNCCL 中ncclSend/ncclRecv 的调用
+# 1. pytorch ProcessGroupNCCL 中ncclSend/ncclRecv 的调用
 
 ```c++
   auto ret = pointToPoint(
