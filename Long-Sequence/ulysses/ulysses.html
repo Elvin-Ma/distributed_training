@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ulysses SP=4(节点内)通信原理</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+         margin: 0; background: #f8fafc; color: #0f172a; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 8px 0 4px; }
+  .sub { font-size: 13px; color: #475569; margin: 0 0 10px; line-height: 1.6; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px;
+            color: #334155; margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { display: inline-block; width: 26px; height: 0; border-top: 3px solid; }
+  .sq { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+  #svgbox svg { width: 100%; height: auto; display: block; }
+  .flow { stroke-dasharray: 9 6; animation: dash .7s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -15; } }
+  .ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+          margin: 10px 0; }
+  button { border: 1px solid #cbd5e1; background: #fff; border-radius: 8px;
+           padding: 8px 14px; font-size: 14px; cursor: pointer; }
+  button:disabled { opacity: .4; cursor: default; }
+  button:not(:disabled):hover { background: #eff6ff; border-color: #2563eb; }
+  #pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { width: 30px; height: 30px; border-radius: 50%; padding: 0;
+          font-size: 13px; }
+  .pill.on { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .desc { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+          padding: 14px 16px; min-height: 120px; }
+  .desc h2 { font-size: 16px; margin: 0 0 6px; }
+  .desc p { font-size: 14px; line-height: 1.8; margin: 0; color: #334155; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Ulysses 序列并行 SP=4(节点内 4 卡):前向 / 反向通信分步演示</h1>
+  <p class="sub">与 Ring CP 一样,4 卡合作处理<b>同一条长序列</b>(切成 S0–S3 四段,参数在
+     Ulysses 组内互为副本)。不同点:Ulysses 不绕环传 KV,而是在注意力前后各做一次
+     <b>All-to-All</b>,把数据在「按序列切」和「按注意力头切」之间转置。示例设 16 个头,
+     每卡分得 4 个头。每个 GPU 内的小方格矩阵表示当前持有的数据:<b>行 = token 段
+     S0–S3,列 = 头组 H0–H3</b>。</p>
+  <div class="legend">
+    <span><i class="sw" style="border-color:#2563eb"></i>前向 All-to-All(Q/K/V 或 O)</span>
+    <span><i class="sw" style="border-color:#ea580c"></i>反向 All-to-All(dO 或 dQ/dK/dV)</span>
+    <span><i class="sw" style="border-color:#16a34a"></i>本地完整注意力(无通信)</span>
+    <span><i class="sq" style="background:#3b82f6"></i>S0
+      <i class="sq" style="background:#10b981"></i>S1
+      <i class="sq" style="background:#f59e0b"></i>S2
+      <i class="sq" style="background:#8b5cf6"></i>S3</span>
+  </div>
+  <div id="svgbox"></div>
+  <div class="ctrl">
+    <button id="prev">← 上一步</button>
+    <div id="pills"></div>
+    <button id="next">下一步 →</button>
+  </div>
+  <div class="desc"><h2 id="stepTitle"></h2><p id="stepDesc"></p></div>
+</div>
+
+<script>
+const SC = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];  // S0..S3 颜色
+const BLUE = '#2563eb', ORANGE = '#ea580c', GREEN = '#16a34a';
+
+// 2×2 GPU 布局
+const BX = [60, 520], BY = [95, 315], BW = 380, BH = 170;
+
+const steps = [
+ { t:'① 初始:序列按 Ulysses=4 切分(节点内)', mode:'seq',
+   d:'一条长序列切成 S0–S3 四段,GPU i 持 token 段 S_i 的完整隐藏维(全部 16 个头的通道)。Embedding、LayerNorm、MLP 都是逐 token 运算,各卡在自己的 token 段上独立计算,零通信——这一点与 Ring CP 完全相同。参数在 4 卡上互为副本(若与 FSDP 组合则是分片,见文末)。',
+   note:'Embedding / LN / MLP:本地' },
+ { t:'② 本地 QKV 投影(零通信)', mode:'seq',
+   d:'每卡用完整的 W_q/W_k/W_v 对自己的 token 段做投影,得到 S_i 段上全部 16 个头的 Q、K、V。此刻的问题和 Ring CP 一样:算注意力需要「某个头视角下的全序列」,而每卡只有 1/4 的 token。Ring 的答案是让 KV 绕环流动;Ulysses 的答案是——干脆把数据转置一下。',
+   note:'QKV = x·W(S_i 段 × 16 头)' },
+ { t:'③ 前向 All-to-All #1:Q/K/V 从「按序列切」→「按头切」', mode:'head',
+   a2a: BLUE, a2aLabel:'All-to-All × 3(Q, K, V)',
+   d:'对 Q、K、V 各做一次 All-to-All:GPU i 把自己 S_i 段上的头组 H_j 发给 GPU j,同时收齐其它卡发来的头组 H_i。完成后每卡持有「全序列 S0–S3 × 自己那 4 个头」——小方格从整行变成整列。每卡收发量 ≈ 3 × (N·d/4) × 3/4,全走 NVLink;且随并行度 P 增大,单卡通信量按 1/P 下降。',
+   note:'发 3 块 · 收 3 块(每张量)' },
+ { t:'④ 本地完整注意力(精确、单卡内完成)', mode:'head', attn:true,
+   d:'现在每卡拥有自己头组的完整 Q/K/V 全序列,直接调用标准 FlashAttention 即可——不需要 online softmax 跨块合并,不需要环形调度,causal mask 下各卡负载天然均衡(每卡算的是同样形状的问题,只是头不同)。这是 Ulysses 相对 Ring 的一大工程优势:注意力内核零改动。',
+   note:'FlashAttention:4 头 × 全序列' },
+ { t:'⑤ 前向 All-to-All #2:输出 O 换回「按序列切」', mode:'seq',
+   a2a: BLUE, a2aLabel:'All-to-All × 1(O)',
+   d:'注意力输出 O 目前是「头切」布局,再做一次 All-to-All 转回「序列切」:每卡重新集齐自己 token 段 S_i 的全部 16 个头,拼接后过输出投影 W_o,随后残差、LN、MLP 全部本地进行,直到下一层注意力再重复 ③–⑤。前向每层共 4 次 All-to-All(Q/K/V/O)。',
+   note:'O 归位 → W_o / MLP 本地' },
+ { t:'⑥ 反向 All-to-All #3:dO 转「头切」+ 本地注意力反向', mode:'head',
+   a2a: ORANGE, a2aLabel:'All-to-All × 1(dO)', attn:true,
+   d:'反向是前向的镜像:上游梯度 dO 是「序列切」布局,先 All-to-All 转成「头切」,然后每卡在自己头组上用标准 FlashAttention backward 一次性算出 dQ、dK、dV——同样无需像 Ring 那样让 dK/dV 绕环逐跳累加,梯度在本卡内一步到位。',
+   note:'attention bwd:dQ/dK/dV 本地' },
+ { t:'⑦ 反向 All-to-All #4:dQ/dK/dV 换回「序列切」', mode:'seq',
+   a2a: ORANGE, a2aLabel:'All-to-All × 3(dQ, dK, dV)',
+   d:'把 dQ/dK/dV 各 All-to-All 转回「序列切」,每卡拿到自己 token 段的完整梯度,继续反传给 QKV 投影和更早的层。反向每层同样是 4 次 All-to-All,总通信量与前向对称。注意:此时权重梯度只含本卡 token 段的贡献,Ulysses 组内还差一次求和——与 CP 完全相同的问题,由外层 DP/FSDP 的梯度归约顺带完成。',
+   note:'梯度归位 → 继续反传' },
+ { t:'⑧ 总结:Ulysses vs Ring CP', mode:'seq',
+   d:'通信量:Ulysses 单卡每层 ≈ 8×N·d/P(随 P 递减),Ring ≈ 前向 2×N·d_kv + 反向翻倍(与 P 无关)——P 大或 MHA(d_kv 大)时 Ulysses 更省;GQA/MQA(d_kv 很小)时 Ring 反而占优。拓扑:All-to-All 要求全互联对称带宽,适合节点内 NVLink;Ring 只需邻居链路,适合跨节点。约束:Ulysses 要求 P 整除头数(GQA 下受 KV 头数限制,不足时需复制 KV 头);Ring 无此限制。故常见混合:节点内 Ulysses × 跨节点 Ring。',
+   note:'—' }
+];
+
+let cur = 0;
+
+function grid(bx, by, i, mode) {
+  const cell = 19, gx0 = bx + BW - 105, gy0 = by + 52;
+  let m = '<text x="' + (gx0 - 6) + '" y="' + (gy0 - 24) +
+          '" font-size="10" fill="#64748b">头组 H0–H3 →</text>';
+  for (let c = 0; c < 4; c++)
+    m += '<text x="' + (gx0 + c * cell + cell / 2) + '" y="' + (gy0 - 8) +
+         '" font-size="9" fill="#94a3b8" text-anchor="middle">H' + c + '</text>';
+  for (let r = 0; r < 4; r++) {
+    m += '<text x="' + (gx0 - 8) + '" y="' + (gy0 + r * cell + 13) +
+         '" font-size="9" fill="#94a3b8" text-anchor="end">S' + r + '</text>';
+    for (let c = 0; c < 4; c++) {
+      const held = (mode === 'seq') ? (r === i) : (c === i);
+      m += '<rect x="' + (gx0 + c * cell) + '" y="' + (gy0 + r * cell) +
+           '" width="' + (cell - 2) + '" height="' + (cell - 2) + '" rx="3"' +
+           ' fill="' + (held ? SC[r] : '#f1f5f9') + '"' +
+           ' stroke="' + (held ? 'none' : '#e2e8f0') + '"/>';
+    }
+  }
+  return m;
+}
+
+function render() {
+  const s = steps[cur];
+  let svg = '<svg viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs>' +
+    '<marker id="mb" markerWidth="8" markerHeight="8" refX="7" refY="4"' +
+    ' orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="' + BLUE +
+    '"/></marker>' +
+    '<marker id="mo" markerWidth="8" markerHeight="8" refX="7" refY="4"' +
+    ' orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="' + ORANGE +
+    '"/></marker>' +
+    '</defs>' +
+    '<rect x="30" y="50" width="900" height="460" rx="14" fill="none"' +
+    ' stroke="#cbd5e1"/>' +
+    '<text x="44" y="74" font-size="13" font-weight="bold" fill="#0f172a">' +
+    '节点 0 · Ulysses SP = 4(NVLink 全互联域)</text>' +
+    '<text x="44" y="90" font-size="11" fill="#64748b">' +
+    '4 卡合作处理同一条序列 · 参数互为副本 · 16 头 ÷ 4 = 每卡 4 头</text>';
+
+  // All-to-All 全互联连线(6 条)
+  if (s.a2a) {
+    const mk = (s.a2a === BLUE) ? 'mb' : 'mo';
+    const cy0 = BY[0] + BH / 2, cy1 = BY[1] + BH / 2;
+    const cx0 = BX[0] + BW / 2, cx1 = BX[1] + BW / 2;
+    const R = BX[0] + BW, L = BX[1], B0 = BY[0] + BH, T1 = BY[1];
+    const lines = [
+      [R, cy0, L, cy0], [R, cy1, L, cy1],                 // 横向两条
+      [cx0, B0, cx0, T1], [cx1, B0, cx1, T1],             // 纵向两条
+      [R, B0 - 20, L, T1 + 20], [L, B0 - 20, R, T1 + 20]  // 对角两条
+    ];
+    for (const p of lines)
+      svg += '<line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + p[2] +
+             '" y2="' + p[3] + '" stroke="' + s.a2a + '" stroke-width="3.5"' +
+             ' class="flow" marker-start="url(#' + mk + ')"' +
+             ' marker-end="url(#' + mk + ')"/>';
+    svg += '<rect x="330" y="272" width="300" height="22" rx="6" fill="#fff"' +
+           ' stroke="' + s.a2a + '"/>' +
+           '<text x="480" y="287" font-size="12" fill="' + s.a2a +
+           '" font-weight="bold" text-anchor="middle">' + s.a2aLabel + '</text>';
+  }
+
+  for (let i = 0; i < 4; i++) {
+    const bx = BX[i % 2], by = BY[i >> 1];
+    const stroke = s.attn ? GREEN : (s.a2a ? s.a2a : '#94a3b8');
+    const layout = (s.mode === 'seq')
+      ? ('布局:token 段 S' + i + ' × 全部 16 头')
+      : ('布局:全序列 S0–S3 × 头组 H' + i);
+    svg += '<rect x="' + bx + '" y="' + by + '" width="' + BW + '" height="' +
+           BH + '" rx="10" fill="' + (s.attn ? '#f0fdf4' : '#ffffff') +
+           '" stroke="' + stroke + '" stroke-width="' + (s.attn ? 2.5 : 1.5) +
+           '"/>' +
+           '<text x="' + (bx + 12) + '" y="' + (by + 22) +
+           '" font-size="13" font-weight="bold" fill="#0f172a">GPU ' + i +
+           ' <tspan font-weight="normal" font-size="11" fill="#64748b">' +
+           '(ulysses rank ' + i + ')</tspan></text>' +
+           '<text x="' + (bx + 12) + '" y="' + (by + 48) +
+           '" font-size="12" fill="' +
+           (s.mode === 'head' ? '#7c3aed' : '#0369a1') + '">' + layout +
+           '</text>' +
+           '<text x="' + (bx + 12) + '" y="' + (by + 70) +
+           '" font-size="11" fill="#334155">' + s.note + '</text>' +
+           '<text x="' + (bx + 12) + '" y="' + (by + 158) +
+           '" font-size="10" fill="#94a3b8">参数:完整副本(Ulysses 组内复制)' +
+           '</text>';
+    svg += grid(bx, by, i, s.mode);
+  }
+
+  svg += '</svg>';
+  document.getElementById('svgbox').innerHTML = svg;
+  document.getElementById('stepTitle').textContent = s.t;
+  document.getElementById('stepDesc').textContent = s.d;
+  document.getElementById('prev').disabled = (cur === 0);
+  document.getElementById('next').disabled = (cur === steps.length - 1);
+  document.querySelectorAll('.pill').forEach(function (p, i) {
+    p.classList.toggle('on', i === cur);
+  });
+}
+
+const pills = document.getElementById('pills');
+steps.forEach(function (_, i) {
+  const b = document.createElement('button');
+  b.className = 'pill';
+  b.textContent = i + 1;
+  b.onclick = function () { cur = i; render(); };
+  pills.appendChild(b);
+});
+document.getElementById('prev').onclick = function () { cur--; render(); };
+document.getElementById('next').onclick = function () { cur++; render(); };
+render();
+</script>
+</body>
+</html>
