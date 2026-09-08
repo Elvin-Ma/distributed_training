@@ -15,7 +15,7 @@ Ulysses 天生就适合放在节点内——它的核心通信是 All-to-All,最
 
 下面画 ulysses=4(占满节点 4 卡)的前向/反向分步原理图,布局上与前面的 CP 图对齐,便于对照:
 
-[点击打开 Ulysses 交互式动画](https://github.com/Elvin-Ma/distributed_training/blob/main/Long-Sequence/ulysses/ulysses.html)
+[点击打开 Ulysses 交互式动画](https://elvin-ma.github.io/distributed_training/Long-Sequence/ulysses/ulysses.html)
 
 # ulysses comm volume
 
