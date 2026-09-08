@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - Long-Sequence/ulysses/ulysses.html
+      - Long-Sequence/ulysses/**       # 触发范围改为目录下所有文件
       - .github/workflows/ulysses-pages.yml
   workflow_dispatch:
 
@@ -31,7 +31,10 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site/Long-Sequence/ulysses
-          cp Long-Sequence/ulysses/ulysses.html _site/Long-Sequence/ulysses/ulysses.html
+          # 复制整个 ulysses 导出目录（包括 assets）
+          cp -a Long-Sequence/ulysses/. _site/Long-Sequence/ulysses/
+          # 禁用 Jekyll 以保留以 _ 开头的文件/目录（如需要）
+          touch _site/.nojekyll
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
