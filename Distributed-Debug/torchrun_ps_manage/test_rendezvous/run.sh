@@ -13,7 +13,7 @@ TORCHRUN_LOG_DIR="${TORCHRUN_LOG_DIR-"./logs"}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:${PYTHONPATH}}"
 export QUICK_EXIT="${QUICK_EXIT:-0}"
-export MUSA_VISIBLE_DEVICES='4,5'
+export CUDA_VISIBLE_DEVICES='4,5'
 
 torchrun_args=(
   --nnodes="${NNODES}"
