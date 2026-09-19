@@ -1,0 +1,17 @@
+# Keep repository text files identical on Windows and Linux.
+* text=auto eol=lf
+
+# Windows command scripts require CRLF for broad cmd.exe compatibility.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Never apply line-ending conversion to binary assets.
+*.7z binary
+*.gif binary
+*.gz binary
+*.jpeg binary
+*.jpg binary
+*.pdf binary
+*.png binary
+*.tar binary
+*.zip binary
