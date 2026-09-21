@@ -778,3 +778,160 @@ logical view:    [num_heads, head_dim, hidden_dim]
 - Newton–Schulz 迭代在负责计算的 rank 上本地执行，迭代之间通常不通信；
 - 打包 All-to-All、bucket、双缓冲和通信/计算重叠是高效实现的关键；
 - 大规模训练前应固定版本，并完成数值、性能与 checkpoint 验证。
+
+# FSDP1 与 Megatron-LM 对 Muon 的支持
+
+## 4.1 FSDP1 与 Megatron-LM Distributed Optimizer 切分 parameter/grad 的异同
+
+### 4.1.1 相同点
+
+两者都在 DP 维度进行分片：
+
+- backward 后通过 Reduce-Scatter，使每个 DP rank 只保留一部分 gradient；
+- optimizer parameter 和 optimizer state 也按 DP rank 分布；
+- 默认分片以连续 buffer 为单位，分片边界不保证与 parameter 边界对齐；
+- 因此，一个二维 weight 可能被切成多个片段，分布在不同 DP rank 上。
+
+### 4.1.2 不同点
+
+**FSDP1：**
+
+- 模型 parameter 在非计算阶段也是分片存储的；
+- forward/backward 前临时 All-Gather 出完整参数；
+- backward 后 parameter、gradient 和 optimizer state 恢复为分片状态。
+
+**Megatron-LM Distributed Optimizer：**
+
+- 用于 forward/backward 的低精度 model parameter 在计算时保持完整；
+- gradient、FP32 main parameter 和 optimizer state 按连续 buffer 分片；
+- 每个 rank 更新自己的 optimizer shard；
+- optimizer step 后 All-Gather 更新后的 parameter shards，恢复每个 DP rank 上的完整 model parameter。
+
+因此，两者虽然参数驻留方式不同，但默认 optimizer 分片都可能从一个二维 weight 的中间切开。
+
+---
+
+## 4.2 这种切分对 Muon 的影响
+
+Adam 的更新是逐元素的，因此可以直接在任意 local shard 上计算。
+
+Muon 不同。它需要对完整二维 momentum 矩阵执行 Newton–Schulz：
+
+\[
+U=\operatorname{NS}(M)
+\]
+
+如果一个矩阵被切到多个 rank：
+
+```text
+rank 0: M[:k]
+rank 1: M[k:]
+```
+
+不能分别执行：
+
+```text
+NS(M[:k])
+NS(M[k:])
+```
+
+因为一般有：
+
+\[
+\operatorname{NS}(M_{\text{local}})
+\neq
+\operatorname{slice}\left(\operatorname{NS}(M)\right)
+\]
+
+所以，FSDP1 或普通 Megatron Distributed Optimizer 的 **byte/range-level 分片**都不适合直接运行 Muon：每个 rank 只拥有矩阵的一部分，无法得到正确的 Newton–Schulz 更新。
+
+---
+
+## 4.3 Megatron-LM 的解决办法：`LayerWiseDistributedOptimizer`
+
+Megatron-LM 没有沿用“先把被切开的 momentum 临时 Gather 回完整矩阵”的方案，而是为 Muon 使用 `LayerWiseDistributedOptimizer`：
+
+> **以完整 parameter 为最小分配单位，将每个二维 Muon weight 完整地分配给一个 DP owner rank。**
+
+### 4.3.1 参数和梯度布局
+
+在构造 DDP buffer 时，LayerWise layout 保证：
+
+```text
+一个 Muon parameter 必须完整落在某个 optimizer shard 内
+```
+
+代码会显式检查 parameter 不能跨越 shard boundary。当前布局还会根据 Newton–Schulz 计算量进行负载均衡，将不同矩阵分配给不同 DP ranks。([github.com](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/layer_wise_optimizer.py))
+
+例如：
+
+```text
+rank 0 owns: W0, W3
+rank 1 owns: W1
+rank 2 owns: W2, W5
+rank 3 owns: W4
+```
+
+这里切分的是**参数集合**，而不是单个参数内部的数据：
+
+```text
+普通 Distributed Optimizer：
+W0 = [rank 0 shard | rank 1 shard | rank 2 shard]
+
+LayerWiseDistributedOptimizer：
+W0 整体归 rank 0
+W1 整体归 rank 1
+W2 整体归 rank 2
+```
+
+DDP 的 Reduce-Scatter 按这个 shard-aligned layout 工作，因此 owner rank 能获得完整 weight 对应的 gradient。优化器的参数组也会被裁剪成只包含本 rank 拥有的完整参数。([github.com](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/layer_wise_optimizer.py))
+
+### 4.3.2 Muon 更新
+
+每个 owner rank 对自己拥有的矩阵执行：
+
+```text
+完整 gradient
+    ↓
+更新完整 momentum
+    ↓
+对完整矩阵执行 Newton–Schulz
+    ↓
+更新完整 parameter
+```
+
+因此 Muon step 中不需要重建被切碎的矩阵，也不会在多个 DP ranks 上重复执行同一个矩阵的 Newton–Schulz。
+
+### 4.3.3 参数同步
+
+optimizer step 后，各 owner rank 将自己更新的完整 parameters All-Gather 到其他 DP ranks，使所有 ranks 恢复 forward/backward 所需的完整 model parameters：
+
+```text
+各 rank 更新自己拥有的完整矩阵
+              ↓
+        Parameter All-Gather
+              ↓
+所有 DP ranks 获得完整模型参数
+```
+
+当前优先使用 DDP parameter buffer 的 `start_param_sync`；旧路径则对各 rank 拥有的参数进行可变大小 All-Gather。([github.com](https://github.com/NVIDIA/Megatron-LM/blob/main/megatron/core/optimizer/layer_wise_optimizer.py))
+
+整体流程可以概括为：
+
+```text
+完整 model parameters 执行 forward/backward
+                ↓
+按完整 parameter 对齐的 gradient Reduce-Scatter
+                ↓
+每个 rank 获得自己负责的完整 Muon gradients
+                ↓
+owner 本地执行 momentum + Newton–Schulz + parameter update
+                ↓
+All-Gather 更新后的完整 parameters
+                ↓
+恢复各 DP rank 上的完整 model parameters
+```
+
+## 4.4 总结
+
+> **Megatron-LM 的真实解决办法是使用 `LayerWiseDistributedOptimizer`，把 Muon 参数按“完整矩阵”分配给 DP ranks，保证 gradient、momentum 和 optimizer state 都不切开单个矩阵；owner 完成本地 Muon 更新后，再 All-Gather 参数。**
