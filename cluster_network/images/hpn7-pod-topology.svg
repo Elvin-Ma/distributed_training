@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1570" viewBox="0 0 1200 1570" role="img" aria-labelledby="title desc">
+<title id="title">07 / 整个 Pod 的网络连接：GPU / NIC → ToR → Agg</title><desc id="desc">15 个 Segment 全部展开；主机和交换机按组绘制。青色为平面 A，紫色为平面 B；两侧共享中间同一批主机。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif} .wire{fill:none;stroke-linejoin:round;stroke-linecap:round}</style>
+<rect width="1200" height="1570" fill="#f5f8fc"/>
+<text x="36" y="48" font-size="28" fill="#183249" font-weight="700">07 / 整个 Pod 的网络连接：GPU / NIC → ToR → Agg</text>
+<text x="36" y="81" font-size="16" fill="#52677b" font-weight="400">15 个 Segment 全部展开；主机和交换机按组绘制。青色为平面 A，紫色为平面 B；两侧共享中间同一批主机。</text>
+<path d="M110 127l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M455 127l16 -12v63l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="110" y="127" width="345" height="63" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="122" y="154" font-size="18" fill="#087f8c" font-weight="700">Core-A（Pod 外）</text>
+<text x="122" y="178" font-size="15" fill="#183249" font-weight="400">具体 Core 端口由部署布线表指定</text>
+<path d="M755 127l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1100 127l16 -12v63l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="755" y="127" width="345" height="63" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="767" y="154" font-size="18" fill="#7451b8" font-weight="700">Core-B（Pod 外）</text>
+<text x="767" y="178" font-size="15" fill="#183249" font-weight="400">具体 Core 端口由部署布线表指定</text>
+<polyline class="wire" points="275,190 275,298" stroke="#087f8c" stroke-width="4"/>
+<polyline class="wire" points="920,190 920,298" stroke="#7451b8" stroke-width="4"/>
+<rect x="60" y="218" width="465" height="45" rx="8" fill="#f5f8fc" stroke="#f5f8fc"/>
+<text x="72" y="247" font-size="18" fill="#087f8c" font-weight="700">每平面 60 × 8 = 480 条 400G（192T）</text>
+<rect x="670" y="218" width="465" height="45" rx="8" fill="#f5f8fc" stroke="#f5f8fc"/>
+<text x="682" y="247" font-size="18" fill="#7451b8" font-weight="700">每平面 60 × 8 = 480 条 400G（192T）</text>
+<rect x="28" y="282" width="1144" height="1078" rx="8" fill="#edf3f9" stroke="#d6e1ec"/>
+<text x="490" y="314" font-size="20" fill="#183249" font-weight="700">Pod 边界</text>
+<polyline class="wire" points="275,282 275,337" stroke="#087f8c" stroke-width="4"/>
+<polyline class="wire" points="920,282 920,337" stroke="#7451b8" stroke-width="4"/>
+<path d="M90 337l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M435 337l16 -12v87l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="90" y="337" width="345" height="87" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="102" y="364" font-size="18" fill="#087f8c" font-weight="700">AggA1…AggA60 · 60 台</text>
+<text x="102" y="388" font-size="15" fill="#183249" font-weight="400">每台 D1…D120 下联：120 × 400G</text>
+<text x="102" y="409" font-size="15" fill="#183249" font-weight="400">每台 C1…C8 上联：8 × 400G</text>
+<polyline class="wire" points="260,424 260,447 60,447 60,1289" stroke="#087f8c" stroke-width="5"/>
+<path d="M755 337l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1100 337l16 -12v87l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="755" y="337" width="345" height="87" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="767" y="364" font-size="18" fill="#7451b8" font-weight="700">AggB1…AggB60 · 60 台</text>
+<text x="767" y="388" font-size="15" fill="#183249" font-weight="400">每台 D1…D120 下联：120 × 400G</text>
+<text x="767" y="409" font-size="15" fill="#183249" font-weight="400">每台 C1…C8 上联：8 × 400G</text>
+<polyline class="wire" points="925,424 925,447 1140,447 1140,1289" stroke="#7451b8" stroke-width="5"/>
+<text x="86" y="483" font-size="19" fill="#087f8c" font-weight="700">全连接：120 ToR × 60 Agg</text>
+<text x="755" y="483" font-size="19" fill="#7451b8" font-weight="700">全连接：120 ToR × 60 Agg</text>
+<text x="86" y="511" font-size="16" fill="#087f8c" font-weight="400">7,200 条 400G；线束不代表共享链路</text>
+<text x="755" y="511" font-size="16" fill="#7451b8" font-weight="400">7,200 条 400G；无 A/B 交换机互联</text>
+<text x="450" y="510" font-size="19" fill="#183249" font-weight="700">每行是一个完整 Segment</text>
+<polyline class="wire" points="60,557 105,557" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,557 449,557" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,557 847,557" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,557 1140,557" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 539l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 539l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="539" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="560" font-size="18" fill="#087f8c" font-weight="700">S01 · ToR0,2,…,14 × 8</text>
+<path d="M847 539l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 539l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="539" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="560" font-size="18" fill="#7451b8" font-weight="700">S01 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="537" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="554" font-size="16" fill="#183249" font-weight="700">S01 · 同一批 136 台主机</text>
+<text x="460" y="570" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="549" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="549" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,607 105,607" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,607 449,607" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,607 847,607" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,607 1140,607" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 589l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 589l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="589" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="610" font-size="18" fill="#087f8c" font-weight="700">S02 · ToR0,2,…,14 × 8</text>
+<path d="M847 589l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 589l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="589" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="610" font-size="18" fill="#7451b8" font-weight="700">S02 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="587" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="604" font-size="16" fill="#183249" font-weight="700">S02 · 同一批 136 台主机</text>
+<text x="460" y="620" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="599" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="599" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,657 105,657" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,657 449,657" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,657 847,657" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,657 1140,657" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 639l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 639l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="639" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="660" font-size="18" fill="#087f8c" font-weight="700">S03 · ToR0,2,…,14 × 8</text>
+<path d="M847 639l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 639l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="639" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="660" font-size="18" fill="#7451b8" font-weight="700">S03 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="637" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="654" font-size="16" fill="#183249" font-weight="700">S03 · 同一批 136 台主机</text>
+<text x="460" y="670" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="649" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="649" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,707 105,707" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,707 449,707" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,707 847,707" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,707 1140,707" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 689l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 689l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="689" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="710" font-size="18" fill="#087f8c" font-weight="700">S04 · ToR0,2,…,14 × 8</text>
+<path d="M847 689l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 689l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="689" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="710" font-size="18" fill="#7451b8" font-weight="700">S04 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="687" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="704" font-size="16" fill="#183249" font-weight="700">S04 · 同一批 136 台主机</text>
+<text x="460" y="720" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="699" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="699" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,757 105,757" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,757 449,757" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,757 847,757" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,757 1140,757" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 739l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 739l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="739" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="760" font-size="18" fill="#087f8c" font-weight="700">S05 · ToR0,2,…,14 × 8</text>
+<path d="M847 739l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 739l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="739" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="760" font-size="18" fill="#7451b8" font-weight="700">S05 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="737" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="754" font-size="16" fill="#183249" font-weight="700">S05 · 同一批 136 台主机</text>
+<text x="460" y="770" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="749" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="749" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,807 105,807" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,807 449,807" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,807 847,807" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,807 1140,807" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 789l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 789l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="789" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="810" font-size="18" fill="#087f8c" font-weight="700">S06 · ToR0,2,…,14 × 8</text>
+<path d="M847 789l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 789l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="789" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="810" font-size="18" fill="#7451b8" font-weight="700">S06 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="787" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="804" font-size="16" fill="#183249" font-weight="700">S06 · 同一批 136 台主机</text>
+<text x="460" y="820" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="799" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="799" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,857 105,857" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,857 449,857" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,857 847,857" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,857 1140,857" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 839l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 839l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="839" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="860" font-size="18" fill="#087f8c" font-weight="700">S07 · ToR0,2,…,14 × 8</text>
+<path d="M847 839l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 839l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="839" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="860" font-size="18" fill="#7451b8" font-weight="700">S07 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="837" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="854" font-size="16" fill="#183249" font-weight="700">S07 · 同一批 136 台主机</text>
+<text x="460" y="870" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="849" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="849" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,907 105,907" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,907 449,907" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,907 847,907" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,907 1140,907" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 889l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 889l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="889" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="910" font-size="18" fill="#087f8c" font-weight="700">S08 · ToR0,2,…,14 × 8</text>
+<path d="M847 889l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 889l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="889" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="910" font-size="18" fill="#7451b8" font-weight="700">S08 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="887" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="904" font-size="16" fill="#183249" font-weight="700">S08 · 同一批 136 台主机</text>
+<text x="460" y="920" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="899" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="899" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,957 105,957" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,957 449,957" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,957 847,957" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,957 1140,957" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 939l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 939l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="939" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="960" font-size="18" fill="#087f8c" font-weight="700">S09 · ToR0,2,…,14 × 8</text>
+<path d="M847 939l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 939l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="939" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="960" font-size="18" fill="#7451b8" font-weight="700">S09 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="937" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="954" font-size="16" fill="#183249" font-weight="700">S09 · 同一批 136 台主机</text>
+<text x="460" y="970" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="949" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="949" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,1007 105,1007" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,1007 449,1007" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,1007 847,1007" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,1007 1140,1007" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 989l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 989l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="989" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="1010" font-size="18" fill="#087f8c" font-weight="700">S10 · ToR0,2,…,14 × 8</text>
+<path d="M847 989l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 989l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="989" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="1010" font-size="18" fill="#7451b8" font-weight="700">S10 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="987" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="1004" font-size="16" fill="#183249" font-weight="700">S10 · 同一批 136 台主机</text>
+<text x="460" y="1020" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="999" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="999" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,1057 105,1057" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,1057 449,1057" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,1057 847,1057" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,1057 1140,1057" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 1039l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 1039l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="1039" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="1060" font-size="18" fill="#087f8c" font-weight="700">S11 · ToR0,2,…,14 × 8</text>
+<path d="M847 1039l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 1039l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="1039" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="1060" font-size="18" fill="#7451b8" font-weight="700">S11 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="1037" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="1054" font-size="16" fill="#183249" font-weight="700">S11 · 同一批 136 台主机</text>
+<text x="460" y="1070" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="1049" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="1049" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,1107 105,1107" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,1107 449,1107" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,1107 847,1107" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,1107 1140,1107" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 1089l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 1089l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="1089" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="1110" font-size="18" fill="#087f8c" font-weight="700">S12 · ToR0,2,…,14 × 8</text>
+<path d="M847 1089l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 1089l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="1089" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="1110" font-size="18" fill="#7451b8" font-weight="700">S12 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="1087" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="1104" font-size="16" fill="#183249" font-weight="700">S12 · 同一批 136 台主机</text>
+<text x="460" y="1120" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="1099" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="1099" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,1157 105,1157" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,1157 449,1157" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,1157 847,1157" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,1157 1140,1157" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 1139l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 1139l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="1139" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="1160" font-size="18" fill="#087f8c" font-weight="700">S13 · ToR0,2,…,14 × 8</text>
+<path d="M847 1139l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 1139l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="1139" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="1160" font-size="18" fill="#7451b8" font-weight="700">S13 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="1137" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="1154" font-size="16" fill="#183249" font-weight="700">S13 · 同一批 136 台主机</text>
+<text x="460" y="1170" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="1149" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="1149" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,1207 105,1207" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,1207 449,1207" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,1207 847,1207" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,1207 1140,1207" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 1189l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 1189l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="1189" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="1210" font-size="18" fill="#087f8c" font-weight="700">S14 · ToR0,2,…,14 × 8</text>
+<path d="M847 1189l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 1189l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="1189" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="1210" font-size="18" fill="#7451b8" font-weight="700">S14 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="1187" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="1204" font-size="16" fill="#183249" font-weight="700">S14 · 同一批 136 台主机</text>
+<text x="460" y="1220" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="1199" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="1199" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<polyline class="wire" points="60,1257 105,1257" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="355,1257 449,1257" stroke="#087f8c" stroke-width="3"/>
+<polyline class="wire" points="737,1257 847,1257" stroke="#7451b8" stroke-width="3"/>
+<polyline class="wire" points="1097,1257 1140,1257" stroke="#7451b8" stroke-width="3"/>
+<path d="M105 1239l16 -12h250l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M355 1239l16 -12v35l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="105" y="1239" width="250" height="35" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="117" y="1260" font-size="18" fill="#087f8c" font-weight="700">S15 · ToR0,2,…,14 × 8</text>
+<path d="M847 1239l16 -12h250l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1097 1239l16 -12v35l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="847" y="1239" width="250" height="35" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="859" y="1260" font-size="18" fill="#7451b8" font-weight="700">S15 · ToR1,3,…,15 × 8</text>
+<rect x="449" y="1237" width="288" height="40" rx="8" fill="#fff" stroke="#859bb0"/>
+<text x="460" y="1254" font-size="16" fill="#183249" font-weight="700">S15 · 同一批 136 台主机</text>
+<text x="460" y="1270" font-size="14" fill="#183249" font-weight="400">每台 8 GPU + 8 NIC（2 × 200G）</text>
+<text x="370" y="1249" font-size="13" fill="#087f8c" font-weight="400">port0</text>
+<text x="762" y="1249" font-size="13" fill="#7451b8" font-weight="400">port1</text>
+<text x="67" y="1335" font-size="19" fill="#183249" font-weight="700">每侧 / 每行：接入 136 × 8 = 1,088 条 200G；ToR 上联 8 × 60 = 480 条 400G。</text>
+<rect x="36" y="1383" width="1128" height="138" rx="8" fill="#eaf0f7" stroke="#d6e1ec"/>
+<text x="52" y="1412" font-size="17" fill="#183249" font-weight="400">Pod 合计：2,040 主机（1,920 活跃 + 120 备用）· 240 ToR · 120 Agg · 15,360 活跃 GPU。</text>
+<text x="52" y="1439" font-size="17" fill="#183249" font-weight="400">接入链路：15 × 136 × 16 = 32,640 条 200G；ToR–Agg：14,400 条 400G；Agg–Core：960 条 400G。</text>
+<text x="52" y="1466" font-size="17" fill="#183249" font-weight="400">每台 Agg 的 D[8(s−1)+r+1] ↔ Segment s / rail r 的 ToR.Uj（j 为本平面 Agg 编号）。</text>
+<text x="52" y="1493" font-size="17" fill="#183249" font-weight="400">跨 Segment 示例：S01.NIC3.port0 → S01.ToR6 → AggA5 → S15.ToR6 → S15.NIC3.port0。</text>
+<text x="36" y="1550" font-size="14" fill="#52677b" font-weight="400">HPN 7.0 · 端口编号为本文示意编号；G/T = Gbit/s / Tbit/s；带宽按单方向相加。</text>
+</svg>

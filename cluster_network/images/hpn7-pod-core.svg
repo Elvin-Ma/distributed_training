@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">05 / Pod → Core → Pod：跨楼层级与端口预算</title><desc id="desc">延续双平面：A → Core-A → A；B → Core-B → B。图中 Core 为设备组，不代表一台交换机。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif} .wire{fill:none;stroke-linejoin:round;stroke-linecap:round}</style>
+<rect width="1200" height="760" fill="#f5f8fc"/>
+<text x="36" y="48" font-size="28" fill="#183249" font-weight="700">05 / Pod → Core → Pod：跨楼层级与端口预算</text>
+<text x="36" y="81" font-size="16" fill="#52677b" font-weight="400">延续双平面：A → Core-A → A；B → Core-B → B。图中 Core 为设备组，不代表一台交换机。</text>
+<path d="M90 153l16 -12h425l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M515 153l16 -12v77l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="90" y="153" width="425" height="77" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="102" y="180" font-size="18" fill="#087f8c" font-weight="700">Core 平面 A · 设备组</text>
+<text x="102" y="204" font-size="15" fill="#183249" font-weight="400">单台 Core：128 × 400G = 51.2T</text>
+<polyline class="wire" points="265,230 300,250 300,350 265,380" stroke="#087f8c" stroke-width="4"/>
+<text x="86" y="283" font-size="18" fill="#087f8c" font-weight="700">480 × 400G</text>
+<text x="86" y="309" font-size="15" fill="#183249" font-weight="400">= 192T / Pod / 平面</text>
+<path d="M90 380l16 -12h190l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M280 380l16 -12v99l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="90" y="380" width="190" height="99" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="102" y="407" font-size="18" fill="#087f8c" font-weight="700">Pod 1 · 平面 A</text>
+<text x="102" y="431" font-size="15" fill="#183249" font-weight="400">60 Agg × 8 上联</text>
+<text x="102" y="455" font-size="14" fill="#183249" font-weight="400">120 ToR · 15 Segment</text>
+<polyline class="wire" points="507,230 542,250 542,350 507,380" stroke="#087f8c" stroke-width="4"/>
+<text x="328" y="283" font-size="18" fill="#087f8c" font-weight="700">480 × 400G</text>
+<text x="328" y="309" font-size="15" fill="#183249" font-weight="400">= 192T / Pod / 平面</text>
+<path d="M332 380l16 -12h190l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M522 380l16 -12v99l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="332" y="380" width="190" height="99" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="344" y="407" font-size="18" fill="#087f8c" font-weight="700">Pod N · 平面 A</text>
+<text x="344" y="431" font-size="15" fill="#183249" font-weight="400">60 Agg × 8 上联</text>
+<text x="344" y="455" font-size="14" fill="#183249" font-weight="400">120 ToR · 15 Segment</text>
+<path d="M660 153l16 -12h425l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1085 153l16 -12v77l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="660" y="153" width="425" height="77" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="672" y="180" font-size="18" fill="#7451b8" font-weight="700">Core 平面 B · 设备组</text>
+<text x="672" y="204" font-size="15" fill="#183249" font-weight="400">单台 Core：128 × 400G = 51.2T</text>
+<polyline class="wire" points="835,230 870,250 870,350 835,380" stroke="#7451b8" stroke-width="4"/>
+<text x="656" y="283" font-size="18" fill="#7451b8" font-weight="700">480 × 400G</text>
+<text x="656" y="309" font-size="15" fill="#183249" font-weight="400">= 192T / Pod / 平面</text>
+<path d="M660 380l16 -12h190l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M850 380l16 -12v99l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="660" y="380" width="190" height="99" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="672" y="407" font-size="18" fill="#7451b8" font-weight="700">Pod 1 · 平面 B</text>
+<text x="672" y="431" font-size="15" fill="#183249" font-weight="400">60 Agg × 8 上联</text>
+<text x="672" y="455" font-size="14" fill="#183249" font-weight="400">120 ToR · 15 Segment</text>
+<polyline class="wire" points="1077,230 1112,250 1112,350 1077,380" stroke="#7451b8" stroke-width="4"/>
+<text x="898" y="283" font-size="18" fill="#7451b8" font-weight="700">480 × 400G</text>
+<text x="898" y="309" font-size="15" fill="#183249" font-weight="400">= 192T / Pod / 平面</text>
+<path d="M902 380l16 -12h190l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1092 380l16 -12v99l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="902" y="380" width="190" height="99" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="914" y="407" font-size="18" fill="#7451b8" font-weight="700">Pod N · 平面 B</text>
+<text x="914" y="431" font-size="15" fill="#183249" font-weight="400">60 Agg × 8 上联</text>
+<text x="914" y="455" font-size="14" fill="#183249" font-weight="400">120 ToR · 15 Segment</text>
+<rect x="36" y="529" width="1128" height="165" rx="8" fill="#eaf0f7" stroke="#d6e1ec"/>
+<text x="52" y="558" font-size="17" fill="#183249" font-weight="400">每台 Agg：120 × 400G 下联 / 8 × 400G 上联 = 48T / 3.2T = 15:1 收敛。</text>
+<text x="52" y="585" font-size="17" fill="#183249" font-weight="400">每 Pod：2 平面 × 60 Agg × 8 = 960 条 400G 上联，总容量 384T（两平面相加）。</text>
+<text x="52" y="612" font-size="17" fill="#183249" font-weight="400">每 Agg 的 C1…C8 为 8 条独立 400G 链路；具体接哪台 Core、哪个端口，需部署布线表确定。</text>
+<text x="52" y="639" font-size="17" fill="#183249" font-weight="400">Figure 7 的 128 × 400G 是单台 Core 的端口规格，不能读作整个 Pod 的上联总数。</text>
+<text x="52" y="666" font-size="17" fill="#183249" font-weight="400">图示仅展开 Pod 1 / Pod N；跨 Pod 承载调度安排的 PP 流量，DP 大流量尽量留在 Pod 内。</text>
+<text x="36" y="740" font-size="14" fill="#52677b" font-weight="400">HPN 7.0 · 端口编号为本文示意编号；G/T = Gbit/s / Tbit/s；带宽按单方向相加。</text>
+</svg>

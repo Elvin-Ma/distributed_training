@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1040" viewBox="0 0 1200 1040" role="img" aria-labelledby="title desc">
+<title id="title">04 / Pod 全景：15 个 Segment 共享两组 Agg</title><desc id="desc">每一行是同一个 Segment 的两半；A/B 两侧交换机互不连接；厚线为汇总线束。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif} .wire{fill:none;stroke-linejoin:round;stroke-linecap:round}</style>
+<rect width="1200" height="1040" fill="#f5f8fc"/>
+<text x="36" y="48" font-size="28" fill="#183249" font-weight="700">04 / Pod 全景：15 个 Segment 共享两组 Agg</text>
+<text x="36" y="81" font-size="16" fill="#52677b" font-weight="400">每一行是同一个 Segment 的两半；A/B 两侧交换机互不连接；厚线为汇总线束。</text>
+<path d="M180 144l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 144l16 -12v76l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="144" width="345" height="76" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="171" font-size="18" fill="#087f8c" font-weight="700">60 台 AggA1…A60</text>
+<text x="192" y="195" font-size="15" fill="#183249" font-weight="400">每台：120 × 400G 下联 + 8 × 400G 上联</text>
+<polyline class="wire" points="555,225 555,890" stroke="#087f8c" stroke-width="6"/>
+<polyline class="wire" points="525,187 555,187 555,225" stroke="#087f8c" stroke-width="6"/>
+<path d="M745 144l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 144l16 -12v76l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="144" width="345" height="76" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="171" font-size="18" fill="#7451b8" font-weight="700">60 台 AggB1…B60</text>
+<text x="757" y="195" font-size="15" fill="#183249" font-weight="400">每台：120 × 400G 下联 + 8 × 400G 上联</text>
+<polyline class="wire" points="1120,225 1120,890" stroke="#7451b8" stroke-width="6"/>
+<polyline class="wire" points="1090,187 1120,187 1120,225" stroke="#7451b8" stroke-width="6"/>
+<text x="38" y="265" font-size="17" fill="#183249" font-weight="700">Segment</text>
+<text x="181" y="265" font-size="18" fill="#087f8c" font-weight="700">平面 A：8 台 ToR / Segment</text>
+<text x="746" y="265" font-size="18" fill="#7451b8" font-weight="700">平面 B：8 台 ToR / Segment</text>
+<text x="50" y="311" font-size="19" fill="#183249" font-weight="700">01</text>
+<path d="M180 288l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 288l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="288" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="309" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D1…D8</text>
+<polyline class="wire" points="541,301 555,301" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 288l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 288l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="288" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="309" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D1…D8</text>
+<polyline class="wire" points="1106,301 1120,301" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="351" font-size="19" fill="#183249" font-weight="700">02</text>
+<path d="M180 328l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 328l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="328" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="349" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D9…D16</text>
+<polyline class="wire" points="541,341 555,341" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 328l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 328l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="328" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="349" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D9…D16</text>
+<polyline class="wire" points="1106,341 1120,341" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="391" font-size="19" fill="#183249" font-weight="700">03</text>
+<path d="M180 368l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 368l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="368" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="389" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D17…D24</text>
+<polyline class="wire" points="541,381 555,381" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 368l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 368l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="368" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="389" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D17…D24</text>
+<polyline class="wire" points="1106,381 1120,381" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="431" font-size="19" fill="#183249" font-weight="700">04</text>
+<path d="M180 408l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 408l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="408" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="429" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D25…D32</text>
+<polyline class="wire" points="541,421 555,421" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 408l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 408l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="408" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="429" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D25…D32</text>
+<polyline class="wire" points="1106,421 1120,421" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="471" font-size="19" fill="#183249" font-weight="700">05</text>
+<path d="M180 448l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 448l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="448" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="469" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D33…D40</text>
+<polyline class="wire" points="541,461 555,461" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 448l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 448l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="448" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="469" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D33…D40</text>
+<polyline class="wire" points="1106,461 1120,461" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="511" font-size="19" fill="#183249" font-weight="700">06</text>
+<path d="M180 488l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 488l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="488" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="509" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D41…D48</text>
+<polyline class="wire" points="541,501 555,501" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 488l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 488l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="488" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="509" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D41…D48</text>
+<polyline class="wire" points="1106,501 1120,501" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="551" font-size="19" fill="#183249" font-weight="700">07</text>
+<path d="M180 528l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 528l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="528" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="549" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D49…D56</text>
+<polyline class="wire" points="541,541 555,541" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 528l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 528l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="528" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="549" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D49…D56</text>
+<polyline class="wire" points="1106,541 1120,541" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="591" font-size="19" fill="#183249" font-weight="700">08</text>
+<path d="M180 568l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 568l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="568" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="589" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D57…D64</text>
+<polyline class="wire" points="541,581 555,581" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 568l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 568l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="568" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="589" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D57…D64</text>
+<polyline class="wire" points="1106,581 1120,581" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="631" font-size="19" fill="#183249" font-weight="700">09</text>
+<path d="M180 608l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 608l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="608" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="629" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D65…D72</text>
+<polyline class="wire" points="541,621 555,621" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 608l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 608l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="608" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="629" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D65…D72</text>
+<polyline class="wire" points="1106,621 1120,621" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="671" font-size="19" fill="#183249" font-weight="700">10</text>
+<path d="M180 648l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 648l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="648" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="669" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D73…D80</text>
+<polyline class="wire" points="541,661 555,661" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 648l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 648l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="648" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="669" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D73…D80</text>
+<polyline class="wire" points="1106,661 1120,661" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="711" font-size="19" fill="#183249" font-weight="700">11</text>
+<path d="M180 688l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 688l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="688" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="709" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D81…D88</text>
+<polyline class="wire" points="541,701 555,701" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 688l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 688l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="688" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="709" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D81…D88</text>
+<polyline class="wire" points="1106,701 1120,701" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="751" font-size="19" fill="#183249" font-weight="700">12</text>
+<path d="M180 728l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 728l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="728" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="749" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D89…D96</text>
+<polyline class="wire" points="541,741 555,741" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 728l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 728l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="728" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="749" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D89…D96</text>
+<polyline class="wire" points="1106,741 1120,741" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="791" font-size="19" fill="#183249" font-weight="700">13</text>
+<path d="M180 768l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 768l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="768" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="789" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D97…D104</text>
+<polyline class="wire" points="541,781 555,781" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 768l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 768l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="768" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="789" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D97…D104</text>
+<polyline class="wire" points="1106,781 1120,781" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="831" font-size="19" fill="#183249" font-weight="700">14</text>
+<path d="M180 808l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 808l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="808" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="829" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D105…D112</text>
+<polyline class="wire" points="541,821 555,821" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 808l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 808l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="808" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="829" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D105…D112</text>
+<polyline class="wire" points="1106,821 1120,821" stroke="#7451b8" stroke-width="3"/>
+<text x="50" y="871" font-size="19" fill="#183249" font-weight="700">15</text>
+<path d="M180 848l16 -12h345l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M525 848l16 -12v29l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="180" y="848" width="345" height="29" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="192" y="869" font-size="18" fill="#087f8c" font-weight="700">8 ToR → 每 Agg 的 D113…D120</text>
+<polyline class="wire" points="541,861 555,861" stroke="#087f8c" stroke-width="3"/>
+<path d="M745 848l16 -12h345l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1090 848l16 -12v29l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="745" y="848" width="345" height="29" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="757" y="869" font-size="18" fill="#7451b8" font-weight="700">8 ToR → 每 Agg 的 D113…D120</text>
+<polyline class="wire" points="1106,861 1120,861" stroke="#7451b8" stroke-width="3"/>
+<rect x="36" y="915" width="1128" height="111" rx="8" fill="#eaf0f7" stroke="#d6e1ec"/>
+<text x="52" y="944" font-size="17" fill="#183249" font-weight="400">每条支线 = 8 × 60 = 480 条 400G；每平面 = 15 × 480 = 7,200 条；双平面共 14,400 条。</text>
+<text x="52" y="971" font-size="17" fill="#183249" font-weight="400">每个 Segment 两侧共享 136 台主机；Pod 合计 2,040 台主机、240 台 ToR、120 台 Agg。</text>
+<text x="52" y="998" font-size="17" fill="#183249" font-weight="400">跨 Segment 路径：源 NIC.port0 → 源 ToR-A → 任一 AggAⱼ → 目的 ToR-A → 目的 NIC.port0。</text>
+<text x="36" y="1020" font-size="14" fill="#52677b" font-weight="400">HPN 7.0 · 端口编号为本文示意编号；G/T = Gbit/s / Tbit/s；带宽按单方向相加。</text>
+</svg>

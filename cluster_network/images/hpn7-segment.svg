@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="940" viewBox="0 0 1200 940" role="img" aria-labelledby="title desc">
+<title id="title">01 / Segment 内部：8 条 rail × 双 ToR</title><desc id="desc">每个 Segment：136 台主机（128 活跃 + 8 备用）· 16 台 ToR · 1,024 活跃 GPU</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif} .wire{fill:none;stroke-linejoin:round;stroke-linecap:round}</style>
+<rect width="1200" height="940" fill="#f5f8fc"/>
+<text x="36" y="48" font-size="28" fill="#183249" font-weight="700">01 / Segment 内部：8 条 rail × 双 ToR</text>
+<text x="36" y="81" font-size="16" fill="#52677b" font-weight="400">每个 Segment：136 台主机（128 活跃 + 8 备用）· 16 台 ToR · 1,024 活跃 GPU</text>
+<text x="52" y="124" font-size="19" fill="#183249" font-weight="700">主机 Hₕ（h = 1…136），下列结构在每台主机重复</text>
+<text x="670" y="124" font-size="19" fill="#087f8c" font-weight="700">平面 A / port0</text>
+<text x="933" y="124" font-size="19" fill="#7451b8" font-weight="700">平面 B / port1</text>
+<rect x="42" y="143" width="494" height="603" rx="8" fill="#edf3f9" stroke="#d6e1ec"/>
+<rect x="58" y="161" width="76" height="560" rx="8" fill="#dce8f3" stroke="#d6e1ec"/>
+<text x="70" y="196" font-size="18" fill="#183249" font-weight="400">机内</text>
+<text x="65" y="228" font-size="16" fill="#183249" font-weight="400">NVLink</text>
+<text x="65" y="260" font-size="18" fill="#183249" font-weight="400">互联</text>
+<polyline class="wire" points="134,186 157,186" stroke="#52677b" stroke-width="2"/>
+<path d="M157 161l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 161l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="161" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="188" font-size="18" fill="#52677b" font-weight="700">GPU0</text>
+<polyline class="wire" points="296,186 323,186" stroke="#52677b" stroke-width="2"/>
+<path d="M323 161l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 161l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="161" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="188" font-size="18" fill="#52677b" font-weight="700">NIC0</text>
+<text x="335" y="205" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,178 620,178 620,176 665,176" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,201 603,201 603,222 921,222 921,186 942,186" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 161l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 161l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="161" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="188" font-size="18" fill="#087f8c" font-weight="700">ToR0 · rail 0</text>
+<path d="M942 161l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 161l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="161" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="188" font-size="18" fill="#7451b8" font-weight="700">ToR1 · rail 0</text>
+<polyline class="wire" points="134,257 157,257" stroke="#52677b" stroke-width="2"/>
+<path d="M157 232l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 232l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="232" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="259" font-size="18" fill="#52677b" font-weight="700">GPU1</text>
+<polyline class="wire" points="296,257 323,257" stroke="#52677b" stroke-width="2"/>
+<path d="M323 232l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 232l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="232" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="259" font-size="18" fill="#52677b" font-weight="700">NIC1</text>
+<text x="335" y="276" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,249 620,249 620,247 665,247" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,272 603,272 603,293 921,293 921,257 942,257" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 232l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 232l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="232" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="259" font-size="18" fill="#087f8c" font-weight="700">ToR2 · rail 1</text>
+<path d="M942 232l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 232l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="232" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="259" font-size="18" fill="#7451b8" font-weight="700">ToR3 · rail 1</text>
+<polyline class="wire" points="134,328 157,328" stroke="#52677b" stroke-width="2"/>
+<path d="M157 303l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 303l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="303" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="330" font-size="18" fill="#52677b" font-weight="700">GPU2</text>
+<polyline class="wire" points="296,328 323,328" stroke="#52677b" stroke-width="2"/>
+<path d="M323 303l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 303l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="303" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="330" font-size="18" fill="#52677b" font-weight="700">NIC2</text>
+<text x="335" y="347" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,320 620,320 620,318 665,318" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,343 603,343 603,364 921,364 921,328 942,328" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 303l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 303l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="303" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="330" font-size="18" fill="#087f8c" font-weight="700">ToR4 · rail 2</text>
+<path d="M942 303l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 303l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="303" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="330" font-size="18" fill="#7451b8" font-weight="700">ToR5 · rail 2</text>
+<polyline class="wire" points="134,399 157,399" stroke="#52677b" stroke-width="2"/>
+<path d="M157 374l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 374l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="374" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="401" font-size="18" fill="#52677b" font-weight="700">GPU3</text>
+<polyline class="wire" points="296,399 323,399" stroke="#52677b" stroke-width="2"/>
+<path d="M323 374l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 374l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="374" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="401" font-size="18" fill="#52677b" font-weight="700">NIC3</text>
+<text x="335" y="418" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,391 620,391 620,389 665,389" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,414 603,414 603,435 921,435 921,399 942,399" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 374l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 374l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="374" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="401" font-size="18" fill="#087f8c" font-weight="700">ToR6 · rail 3</text>
+<path d="M942 374l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 374l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="374" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="401" font-size="18" fill="#7451b8" font-weight="700">ToR7 · rail 3</text>
+<polyline class="wire" points="134,470 157,470" stroke="#52677b" stroke-width="2"/>
+<path d="M157 445l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 445l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="445" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="472" font-size="18" fill="#52677b" font-weight="700">GPU4</text>
+<polyline class="wire" points="296,470 323,470" stroke="#52677b" stroke-width="2"/>
+<path d="M323 445l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 445l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="445" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="472" font-size="18" fill="#52677b" font-weight="700">NIC4</text>
+<text x="335" y="489" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,462 620,462 620,460 665,460" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,485 603,485 603,506 921,506 921,470 942,470" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 445l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 445l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="445" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="472" font-size="18" fill="#087f8c" font-weight="700">ToR8 · rail 4</text>
+<path d="M942 445l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 445l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="445" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="472" font-size="18" fill="#7451b8" font-weight="700">ToR9 · rail 4</text>
+<polyline class="wire" points="134,541 157,541" stroke="#52677b" stroke-width="2"/>
+<path d="M157 516l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 516l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="516" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="543" font-size="18" fill="#52677b" font-weight="700">GPU5</text>
+<polyline class="wire" points="296,541 323,541" stroke="#52677b" stroke-width="2"/>
+<path d="M323 516l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 516l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="516" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="543" font-size="18" fill="#52677b" font-weight="700">NIC5</text>
+<text x="335" y="560" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,533 620,533 620,531 665,531" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,556 603,556 603,577 921,577 921,541 942,541" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 516l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 516l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="516" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="543" font-size="18" fill="#087f8c" font-weight="700">ToR10 · rail 5</text>
+<path d="M942 516l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 516l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="516" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="543" font-size="18" fill="#7451b8" font-weight="700">ToR11 · rail 5</text>
+<polyline class="wire" points="134,612 157,612" stroke="#52677b" stroke-width="2"/>
+<path d="M157 587l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 587l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="587" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="614" font-size="18" fill="#52677b" font-weight="700">GPU6</text>
+<polyline class="wire" points="296,612 323,612" stroke="#52677b" stroke-width="2"/>
+<path d="M323 587l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 587l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="587" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="614" font-size="18" fill="#52677b" font-weight="700">NIC6</text>
+<text x="335" y="631" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,604 620,604 620,602 665,602" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,627 603,627 603,648 921,648 921,612 942,612" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 587l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 587l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="587" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="614" font-size="18" fill="#087f8c" font-weight="700">ToR12 · rail 6</text>
+<path d="M942 587l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 587l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="587" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="614" font-size="18" fill="#7451b8" font-weight="700">ToR13 · rail 6</text>
+<polyline class="wire" points="134,683 157,683" stroke="#52677b" stroke-width="2"/>
+<path d="M157 658l16 -12h123l-16 12Z" fill="#52677b" opacity=".24"/><path d="M280 658l16 -12v48l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="157" y="658" width="123" height="48" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="169" y="685" font-size="18" fill="#52677b" font-weight="700">GPU7</text>
+<polyline class="wire" points="296,683 323,683" stroke="#52677b" stroke-width="2"/>
+<path d="M323 658l16 -12h183l-16 12Z" fill="#52677b" opacity=".24"/><path d="M506 658l16 -12v53l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="323" y="658" width="183" height="53" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="335" y="685" font-size="18" fill="#52677b" font-weight="700">NIC7</text>
+<text x="335" y="702" font-size="15" fill="#183249" font-weight="400">p0:200G  p1:200G</text>
+<polyline class="wire" points="506,675 620,675 620,673 665,673" stroke="#087f8c" stroke-width="2"/>
+<polyline class="wire" points="506,698 603,698 603,719 921,719 921,683 942,683" stroke="#7451b8" stroke-width="2"/>
+<path d="M665 658l16 -12h215l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M880 658l16 -12v49l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="665" y="658" width="215" height="49" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="677" y="685" font-size="18" fill="#087f8c" font-weight="700">ToR14 · rail 7</text>
+<path d="M942 658l16 -12h204l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1146 658l16 -12v49l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="942" y="658" width="204" height="49" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="954" y="685" font-size="18" fill="#7451b8" font-weight="700">ToR15 · rail 7</text>
+<rect x="36" y="769" width="1128" height="138" rx="8" fill="#eaf0f7" stroke="#d6e1ec"/>
+<text x="52" y="798" font-size="17" fill="#183249" font-weight="400">每条彩线 = 当前主机的一条 200G 链路；每台 ToR 接收全部 136 台主机的同号 NIC 端口。</text>
+<text x="52" y="825" font-size="17" fill="#183249" font-weight="400">每主机：8 NIC × 2 × 200G = 3.2T；每 Segment：136 × 16 = 2,176 条 200G 接入链路。</text>
+<text x="52" y="852" font-size="17" fill="#183249" font-weight="400">同 rail 跨主机：NICᵣ → ToR₂ᵣ（或 ToR₂ᵣ₊₁）→ NICᵣ；一条 rail 对应 128 张活跃 GPU。</text>
+<text x="52" y="879" font-size="17" fill="#183249" font-weight="400">跨 rail 可利用机内 NVLink 换轨；ToR 之间无直连。每台 ToR 另有 60 × 400G 上联，见图 02/03。</text>
+<text x="36" y="920" font-size="14" fill="#52677b" font-weight="400">HPN 7.0 · 端口编号为本文示意编号；G/T = Gbit/s / Tbit/s；带宽按单方向相加。</text>
+</svg>

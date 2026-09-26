@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" role="img" aria-labelledby="title desc">
+<title id="title">02 / 单台 ToR：128 个 400G 物理口如何分配</title><desc id="desc">D/U 表示下联/上联逻辑标签；P 表示示意物理口；breakout 子口以 .a / .b 标记。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif} .wire{fill:none;stroke-linejoin:round;stroke-linecap:round}</style>
+<rect width="1200" height="780" fill="#f5f8fc"/>
+<text x="36" y="48" font-size="28" fill="#183249" font-weight="700">02 / 单台 ToR：128 个 400G 物理口如何分配</text>
+<text x="36" y="81" font-size="16" fill="#52677b" font-weight="400">D/U 表示下联/上联逻辑标签；P 表示示意物理口；breakout 子口以 .a / .b 标记。</text>
+<path d="M60 147l16 -12h1070l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M1130 147l16 -12v86l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="60" y="147" width="1070" height="86" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="72" y="174" font-size="18" fill="#087f8c" font-weight="700">51.2T ToR · 128 × 400G</text>
+<text x="72" y="198" font-size="15" fill="#183249" font-weight="400">下联 P1…P68：68 × 400G = 136 × 200G 子口；上联 P69…P128：60 × 400G</text>
+<rect x="65" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="98" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="131" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="164" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="197" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="230" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="263" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="296" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="329" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="362" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="395" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="428" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="461" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="494" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="527" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="560" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="593" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="626" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="659" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="692" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="725" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="758" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="791" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="824" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="857" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="890" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="923" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="956" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="989" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="1022" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="1055" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="1088" y="273" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="65" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="98" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="131" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="164" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="197" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="230" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="263" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="296" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="329" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="362" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="395" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="428" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="461" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="494" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="527" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="560" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="593" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="626" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="659" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="692" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="725" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="758" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="791" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="824" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="857" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="890" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="923" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="956" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="989" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="1022" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="1055" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="1088" y="302" width="25" height="18" rx="8" fill="#087f8c" stroke="#087f8c"/>
+<rect x="65" y="331" width="25" height="18" rx="8" fill="#de9b2f" stroke="#de9b2f"/>
+<rect x="98" y="331" width="25" height="18" rx="8" fill="#de9b2f" stroke="#de9b2f"/>
+<rect x="131" y="331" width="25" height="18" rx="8" fill="#de9b2f" stroke="#de9b2f"/>
+<rect x="164" y="331" width="25" height="18" rx="8" fill="#de9b2f" stroke="#de9b2f"/>
+<rect x="197" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="230" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="263" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="296" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="329" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="362" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="395" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="428" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="461" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="494" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="527" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="560" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="593" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="626" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="659" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="692" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="725" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="758" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="791" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="824" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="857" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="890" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="923" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="956" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="989" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="1022" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="1055" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="1088" y="331" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="65" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="98" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="131" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="164" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="197" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="230" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="263" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="296" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="329" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="362" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="395" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="428" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="461" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="494" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="527" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="560" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="593" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="626" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="659" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="692" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="725" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="758" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="791" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="824" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="857" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="890" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="923" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="956" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="989" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="1022" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="1055" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<rect x="1088" y="360" width="25" height="18" rx="8" fill="#7451b8" stroke="#7451b8"/>
+<text x="60" y="419" font-size="18" fill="#087f8c" font-weight="400">■ P1…P64：128 个活跃子口</text>
+<text x="470" y="419" font-size="18" fill="#986014" font-weight="400">■ P65…P68：8 个备用子口</text>
+<text x="865" y="419" font-size="18" fill="#7451b8" font-weight="400">■ P69…P128：上联</text>
+<path d="M65 465l16 -12h312l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M377 465l16 -12v77l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="65" y="465" width="312" height="77" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="77" y="492" font-size="18" fill="#087f8c" font-weight="700">P1 / 400G → 2 × 200G</text>
+<text x="77" y="516" font-size="15" fill="#183249" font-weight="400">P1.a → H1；P1.b → H2</text>
+<path d="M430 465l16 -12h312l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M742 465l16 -12v77l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="430" y="465" width="312" height="77" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="442" y="492" font-size="18" fill="#087f8c" font-weight="700">P68 / 400G → 2 × 200G</text>
+<text x="442" y="516" font-size="15" fill="#183249" font-weight="400">P68.a → H135；.b → H136</text>
+<path d="M798 465l16 -12h332l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1130 465l16 -12v77l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="798" y="465" width="332" height="77" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="810" y="492" font-size="18" fill="#7451b8" font-weight="700">Uj = P(68+j) / 400G</text>
+<text x="810" y="516" font-size="15" fill="#183249" font-weight="400">U1 → Agg1；U60 → Agg60</text>
+<rect x="36" y="574" width="1128" height="138" rx="8" fill="#eaf0f7" stroke="#d6e1ec"/>
+<text x="52" y="603" font-size="17" fill="#183249" font-weight="400">任意主机 Hₕ：Dₕ = P⌈h/2⌉ 的 .a（h 奇数）或 .b（h 偶数）；同一 ToR 上对应同号 NIC。</text>
+<text x="52" y="630" font-size="17" fill="#183249" font-weight="400">下联装机容量：136 × 200G = 27.2T；活跃容量：128 × 200G = 25.6T；上联：60 × 400G = 24T。</text>
+<text x="52" y="657" font-size="17" fill="#183249" font-weight="400">物理口预算：68 + 60 = 128；活跃接入超售比：25.6 / 24 ≈ 1.067:1（含备用为 1.133:1）。</text>
+<text x="52" y="684" font-size="17" fill="#183249" font-weight="400">彩色小格按物理口逐个绘制；本图分配方案用于解释数量，不代表厂商面板排列或现场布线号。</text>
+<text x="36" y="760" font-size="14" fill="#52677b" font-weight="400">HPN 7.0 · 端口编号为本文示意编号；G/T = Gbit/s / Tbit/s；带宽按单方向相加。</text>
+</svg>

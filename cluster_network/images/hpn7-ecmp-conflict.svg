@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="990" viewBox="0 0 1200 990" role="img" aria-labelledby="title desc">
+<title id="title">08 / 多台 ToR 选中同一 Agg：ECMP 哈希碰撞发生在哪里</title><desc id="desc">示例仅取平面 A：三个 Segment 的各一条 200G 流，分别发给 Segment 4 的三台不同主机。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif} .wire{fill:none;stroke-linejoin:round;stroke-linecap:round}</style>
+<rect width="1200" height="990" fill="#f5f8fc"/>
+<text x="36" y="48" font-size="28" fill="#183249" font-weight="700">08 / 多台 ToR 选中同一 Agg：ECMP 哈希碰撞发生在哪里</text>
+<text x="36" y="81" font-size="16" fill="#52677b" font-weight="400">示例仅取平面 A：三个 Segment 的各一条 200G 流，分别发给 Segment 4 的三台不同主机。</text>
+<rect x="35" y="112" width="1130" height="642" rx="8" fill="#fff" stroke="#d6e1ec"/>
+<text x="58" y="150" font-size="20" fill="#183249" font-weight="700">① 每台源 ToR 独立计算 ECMP：60 台 AggA 都是等价下一跳</text>
+<text x="58" y="184" font-size="17" fill="#52677b" font-weight="400">示例哈希结果：三条流恰好都选中 AggA5（并非三台 ToR 共用一根上联线）。</text>
+<path d="M65 235l16 -12h294l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M359 235l16 -12v62l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="65" y="235" width="294" height="62" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="77" y="262" font-size="18" fill="#087f8c" font-weight="700">Segment 1 · ToR0</text>
+<text x="77" y="286" font-size="15" fill="#183249" font-weight="400">主机 H1 → 独立 200G 流 F1</text>
+<polyline class="wire" points="359,266 460,266 460,290 590,290" stroke="#087f8c" stroke-width="4"/>
+<text x="376" y="245" font-size="14" fill="#087f8c" font-weight="400">独立 400G 链路</text>
+<path d="M65 335l16 -12h294l-16 12Z" fill="#3472ad" opacity=".24"/><path d="M359 335l16 -12v62l-16 12Z" fill="#3472ad" opacity=".48"/>
+<rect x="65" y="335" width="294" height="62" rx="8" fill="#fff" stroke="#3472ad"/>
+<text x="77" y="362" font-size="18" fill="#3472ad" font-weight="700">Segment 2 · ToR0</text>
+<text x="77" y="386" font-size="15" fill="#183249" font-weight="400">主机 H2 → 独立 200G 流 F2</text>
+<polyline class="wire" points="359,366 500,366 500,321 590,321" stroke="#3472ad" stroke-width="4"/>
+<text x="376" y="345" font-size="14" fill="#3472ad" font-weight="400">独立 400G 链路</text>
+<path d="M65 435l16 -12h294l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M359 435l16 -12v62l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="65" y="435" width="294" height="62" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="77" y="462" font-size="18" fill="#7451b8" font-weight="700">Segment 3 · ToR0</text>
+<text x="77" y="486" font-size="15" fill="#183249" font-weight="400">主机 H3 → 独立 200G 流 F3</text>
+<polyline class="wire" points="359,466 550,466 550,351 590,351" stroke="#7451b8" stroke-width="4"/>
+<text x="376" y="445" font-size="14" fill="#7451b8" font-weight="400">独立 400G 链路</text>
+<path d="M590 265l16 -12h210l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M800 265l16 -12v116l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="590" y="265" width="210" height="116" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="602" y="292" font-size="18" fill="#087f8c" font-weight="700">AggA5</text>
+<text x="602" y="316" font-size="15" fill="#183249" font-weight="400">3 条入链，各收到 200G</text>
+<text x="602" y="348" font-size="17" fill="#bd4937" font-weight="700">流量需求合计 600G</text>
+<polyline class="wire" points="800,321 920,321" stroke="#bd4937" stroke-width="8"/>
+<text x="807" y="244" font-size="16" fill="#bd4937" font-weight="700">唯一一条 400G 链路</text>
+<path d="M920 265l16 -12h216l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M1136 265l16 -12v116l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="920" y="265" width="216" height="116" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="932" y="292" font-size="18" fill="#087f8c" font-weight="700">Segment 4 · ToR0</text>
+<text x="932" y="316" font-size="15" fill="#183249" font-weight="400">到三台不同目的主机</text>
+<text x="931" y="348" font-size="15" fill="#52677b" font-weight="400">目的下联未合并</text>
+<path d="M920 412l16 -12h216l-16 12Z" fill="#087f8c" opacity=".24"/><path d="M1136 412l16 -12v42l-16 12Z" fill="#087f8c" opacity=".48"/>
+<rect x="920" y="412" width="216" height="42" rx="8" fill="#fff" stroke="#087f8c"/>
+<text x="932" y="439" font-size="18" fill="#087f8c" font-weight="700">目的主机 D1 · NIC0</text>
+<path d="M920 458l16 -12h216l-16 12Z" fill="#3472ad" opacity=".24"/><path d="M1136 458l16 -12v42l-16 12Z" fill="#3472ad" opacity=".48"/>
+<rect x="920" y="458" width="216" height="42" rx="8" fill="#fff" stroke="#3472ad"/>
+<text x="932" y="485" font-size="18" fill="#3472ad" font-weight="700">目的主机 D2 · NIC0</text>
+<path d="M920 504l16 -12h216l-16 12Z" fill="#7451b8" opacity=".24"/><path d="M1136 504l16 -12v42l-16 12Z" fill="#7451b8" opacity=".48"/>
+<rect x="920" y="504" width="216" height="42" rx="8" fill="#fff" stroke="#7451b8"/>
+<text x="932" y="531" font-size="18" fill="#7451b8" font-weight="700">目的主机 D3 · NIC0</text>
+<rect x="80" y="581" width="1050" height="122" rx="8" fill="#fff" stroke="#d6e1ec"/>
+<text x="101" y="614" font-size="18" fill="#183249" font-weight="700">未被选中的等价路径仍然可用：</text>
+<path d="M135 635l16 -12h264l-16 12Z" fill="#52677b" opacity=".24"/><path d="M399 635l16 -12v49l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="135" y="635" width="264" height="49" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="147" y="662" font-size="18" fill="#52677b" font-weight="700">AggA6 → Segment 4.ToR0</text>
+<text x="144" y="697" font-size="15" fill="#52677b" font-weight="400">各有一条独立 400G 下联</text>
+<path d="M600 635l16 -12h264l-16 12Z" fill="#52677b" opacity=".24"/><path d="M864 635l16 -12v49l-16 12Z" fill="#52677b" opacity=".48"/>
+<rect x="600" y="635" width="264" height="49" rx="8" fill="#fff" stroke="#52677b"/>
+<text x="612" y="662" font-size="18" fill="#52677b" font-weight="700">AggA7 → Segment 4.ToR0</text>
+<text x="609" y="697" font-size="15" fill="#52677b" font-weight="400">各有一条独立 400G 下联</text>
+<rect x="36" y="776" width="1128" height="165" rx="8" fill="#eaf0f7" stroke="#d6e1ec"/>
+<text x="52" y="805" font-size="17" fill="#183249" font-weight="400">② 碰撞点是 AggA5 → Segment 4.ToR0：需求 3 × 200G = 600G，出口只有 400G；会排队或限速。</text>
+<text x="52" y="832" font-size="17" fill="#183249" font-weight="400">三条“源 ToR → AggA5”是三根独立的 400G 线，各只承载 200G；拥塞并不发生在这三根线上。</text>
+<text x="52" y="859" font-size="17" fill="#183249" font-weight="400">如果分别选择 AggA5 / A6 / A7，目的 ToR 能通过三根不同的 400G 线接收这三条流。</text>
+<text x="52" y="886" font-size="17" fill="#183249" font-weight="400">双平面消除的是 Agg 在目的双 ToR 之间再做一次 ECMP 选择；源 ToR 选 60 台 Agg 时仍可能碰撞。</text>
+<text x="52" y="913" font-size="17" fill="#183249" font-weight="400">图中 200G 是每条流的示意需求；实际流量、哈希结果和队列行为取决于业务与调度。</text>
+<text x="36" y="970" font-size="14" fill="#52677b" font-weight="400">HPN 7.0 · 端口编号为本文示意编号；G/T = Gbit/s / Tbit/s；带宽按单方向相加。</text>
+</svg>
